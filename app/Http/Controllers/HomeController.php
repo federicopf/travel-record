@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function index(): Response
+    public function index()
     {
-        return Inertia::render('Home', [
-            'title' => 'Homepage con Vue'
-        ]);
+        return Inertia::render('Home');
     }
 }
