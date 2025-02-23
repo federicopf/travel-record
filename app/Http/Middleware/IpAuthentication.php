@@ -17,7 +17,6 @@ class IpAuthentication
             return $next($request);
         }
 
-        dd('aa');
         return redirect('/login');
     }
 }
