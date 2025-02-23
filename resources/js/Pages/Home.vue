@@ -33,6 +33,12 @@ const trips = [
 
 <template>
     <AppLayout>
+        <transition name="fade">
+            <div v-if="$page.props.flash?.success" class="bg-green-500 text-white p-3 rounded-md text-center mb-6">
+                {{ $page.props.flash.success }}
+            </div>
+        </transition>
+        
         <div class="container mx-auto px-4 py-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
                 <h1 class="text-3xl font-bold text-pink-600 mb-4 md:mb-0">I nostri viaggi insieme</h1>

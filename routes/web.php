@@ -9,6 +9,8 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-Route::get('/', [TripController::class, 'index'])->name('home')->middleware(IpAuthentication::class);
-Route::get('/new-trip', [TripController::class, 'create'])->name('new-trip')->middleware(IpAuthentication::class);
+Route::middleware([IpAuthentication::class])->group(function () {
+    Route::get('/', [TripController::class, 'index'])->name('home');
+    Route::get('/new-trip', [TripController::class, 'create'])->name('new-trip');
+    Route::post('/new-trip', [TripController::class, 'store'])->name('new-trip.store');
+});

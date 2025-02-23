@@ -1,6 +1,9 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+
 import { ref, computed } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
+
 import Step1 from '@/Components/NewTrip/Step1.vue';
 import Step2 from '@/Components/NewTrip/Step2.vue';
 import Step3 from '@/Components/NewTrip/Step3.vue';
@@ -36,9 +39,30 @@ const prevStep = () => {
     }
 };
 
-// Simula il salvataggio finale
 const saveTrip = () => {
-    console.log('Viaggio salvato:', tripData.value);
+    const formData = new FormData();
+    formData.append('title', tripData.value.title);
+    formData.append('start_date', tripData.value.startDate);
+    formData.append('end_date', tripData.value.endDate);
+
+    tripData.value.places.forEach((place, index) => {
+        formData.append(`places[${index}][name]`, place.name);
+        formData.append(`places[${index}][lat]`, place.lat);
+        formData.append(`places[${index}][lng]`, place.lng);
+
+        place.photos.forEach((photo, pIndex) => {
+            formData.append(`places[${index}][photos][${pIndex}]`, photo.file);
+        });
+    });
+
+    Inertia.post('/new-trip', formData, {
+        onSuccess: () => {
+            console.log("Viaggio salvato con successo!");
+        },
+        onError: (errors) => {
+            console.log("Errore nel salvataggio:", errors);
+        }
+    });
 };
 </script>
 
