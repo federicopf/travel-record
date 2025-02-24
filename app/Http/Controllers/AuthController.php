@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -19,7 +20,9 @@ class AuthController extends Controller
         $password = $request->input('password');
     
         if ($password !== 'alessia123') {
-            return redirect()->back()->withErrors(['password' => 'Password errata']);
+            throw ValidationException::withMessages([
+                'password' => 'Password errata',
+            ]);
         }
     
         Cache::put("allowed_ip_{$request->ip()}", true, now()->addHours(24));
