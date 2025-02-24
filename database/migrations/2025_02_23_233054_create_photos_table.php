@@ -8,7 +8,7 @@ return new class extends Migration {
         Schema::create('photos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('place_id')->constrained()->onDelete('cascade');
-            $table->string('path'); // Percorso del file immagine
+            $table->string('path'); 
             $table->timestamps();
         });
     }

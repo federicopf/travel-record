@@ -14,6 +14,7 @@ const tripData = ref({
     title: '',
     startDate: '',
     endDate: '',
+    favorite_photo: '',
     places: []
 });
 

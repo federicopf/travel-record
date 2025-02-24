@@ -13,14 +13,30 @@ class TripController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Home');
+        $trips = Trip::with(['places.photos'])->get();
+
+        // Aggiunge la prima immagine di ogni trip per l'anteprima
+        $trips = $trips->map(function ($trip) {
+            return [
+                'id' => $trip->id,
+                'title' => $trip->title,
+                'start_date' => $trip->start_date,
+                'end_date' => $trip->end_date,
+                'image' => $trip->image ? "/storage/{$trip->image}" : null, // Percorso corretto
+            ];
+        });
+
+        return Inertia::render('Home', [
+            'trips' => $trips,
+        ]);
     }
 
+    
     public function create()
     {
         return Inertia::render('NewTrip');
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -32,17 +48,22 @@ class TripController extends Controller
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
             'places.*.photos' => 'array|max:10',
-            'places.*.photos.*' => 'nullable|file|image|max:2048', // Max 2MB
+            'places.*.photos.*' => 'nullable|file|image|max:2048',
+            'favorite_photo' => 'nullable|string', // ✅ Permettiamo null
         ]);
+        
+        dd($validated);
     
-        // Salva il viaggio
         $trip = Trip::create([
             'title' => $validated['title'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
+            'image' => null,
         ]);
     
-        // Salva i luoghi e le foto
+        $favoritePhotoName = $validated['favorite_photo'] ?? null;
+        $favoriteImagePath = null;
+    
         foreach ($validated['places'] as $placeData) {
             $place = $trip->places()->create([
                 'name' => $placeData['name'],
@@ -51,15 +72,31 @@ class TripController extends Controller
             ]);
     
             if (!empty($placeData['photos'])) {
-                foreach ($placeData['photos'] as $index => $photo) {
-                    // Salviamo le foto in `uploads/trips/{trip_id}/{place_id}/fotoX.jpg`
-                    $path = $photo->store("uploads/trips/{$trip->id}/{$place->id}");
+                foreach ($placeData['photos'] as $photo) {
+                    $path = $photo->store("uploads/trips/{$trip->id}/{$place->id}", 'public');
+                    $photoName = $photo->getClientOriginalName(); 
+    
+                    if ($favoritePhotoName && $photoName === $favoritePhotoName) {
+                        $favoriteImagePath = $path;
+                    }
+    
                     $place->photos()->create(['path' => $path]);
                 }
             }
         }
     
-        return Inertia::location(route('home'));
+        if ($favoriteImagePath) {
+            $trip->update(['image' => $favoriteImagePath]);
+        } else {
+            $firstPhoto = optional($trip->places->first()?->photos->first())->path;
+            if ($firstPhoto) {
+                $trip->update(['image' => $firstPhoto]);
+            }
+        }
+    
+        return Redirect::route('home')->with('success', 'Viaggio aggiunto con successo!');
     }
+    
+
     
 }

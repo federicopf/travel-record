@@ -10,8 +10,7 @@ const placeInput = ref(null);
 onMounted(() => {
     if (window.google) {
         const autocomplete = new window.google.maps.places.Autocomplete(placeInput.value, {
-            types: ['geocode'], // Solo indirizzi
-            componentRestrictions: { country: 'IT' }, // Opzionale: Limita a un paese
+            types: ['geocode'], 
         });
 
         autocomplete.addListener('place_changed', () => {
