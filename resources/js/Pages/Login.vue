@@ -1,8 +1,8 @@
 <script setup>
+
 import { ref } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
-import { nextTick } from 'vue';
 
 const password = ref('');
 const error = ref(null);
