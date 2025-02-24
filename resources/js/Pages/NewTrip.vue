@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import { route } from 'ziggy-js';
 
 import Step1 from '@/Components/NewTrip/Step1.vue';
 import Step2 from '@/Components/NewTrip/Step2.vue';
@@ -55,7 +56,7 @@ const saveTrip = () => {
         });
     });
 
-    Inertia.post('/new-trip', formData, {
+    Inertia.post(route('new-trip.store'), formData, {
         onSuccess: () => {
             console.log("Viaggio salvato con successo!");
         },

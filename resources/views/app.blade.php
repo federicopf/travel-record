@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Travel record</title>
     @vite('resources/js/app.js')
+    @routes
 </head>
 <body>
     @inertia

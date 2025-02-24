@@ -1,15 +1,15 @@
 <script setup>
+
 import { ref } from 'vue';
+import { route } from 'ziggy-js';
 import { Inertia } from '@inertiajs/inertia';
 
 const password = ref('');
 const error = ref(null);
 
 const submitForm = () => {
-    Inertia.post('/login', { password: password.value }, {
-        onError: (errors) => {
-            error.value = errors.password;
-        }
+    Inertia.post(route('login.post'), { password: password.value }, {
+        preserveState: false
     });
 };
 </script>

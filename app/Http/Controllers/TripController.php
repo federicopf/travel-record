@@ -59,9 +59,7 @@ class TripController extends Controller
             }
         }
     
-        return Inertia::render('Home', [
-            'flash' => ['success' => 'Viaggio salvato con successo!']
-        ]);
+        return Inertia::location(route('home'));
     }
     
 }
