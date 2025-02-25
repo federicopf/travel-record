@@ -23,9 +23,9 @@ onMounted(() => {
                 <Link :href="route('home')" class="text-lg font-semibold hover:text-gray-200 transition">
                     Home
                 </Link>
-                <span class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">
+                <Link :href="route('map')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">
                     Mappa
-                </span>
+                </Link>
             </nav>
 
             <!-- Bottone Mobile -->

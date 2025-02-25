@@ -26,7 +26,8 @@
                 <div v-for="trip in trips" :key="trip.id"
                     class="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition">
                     
-                    <img :src="trip.image" :alt="trip.title" class="w-full h-48 object-cover">
+                    <img v-if="trip.image" :src="trip.image" :alt="trip.title" class="w-full h-48 object-cover">
+                    <p v-else class="flex h-48 italic text-center items-center object-cover">Nessuna immagine per questo viaggio! Male...</p>
 
                     <div class="p-4 bg-pink-50">
                         <h2 class="text-xl font-semibold text-pink-700">{{ trip.title }}</h2>

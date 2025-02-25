@@ -73,7 +73,6 @@ const prevPhoto = () => {
     }
 };
 
-// Imposta l'immagine come preferita
 const setFavorite = () => {
     if (!selectedPlaceData.value) return;
 
@@ -84,13 +83,16 @@ const setFavorite = () => {
     });
 
     selectedPlaceData.value.photos[currentPhotoIndex.value].is_favorite = true;
-    favoritePhoto.value = selectedPlaceData.value.photos[currentPhotoIndex.value].name; 
+    favoritePhoto.value = selectedPlaceData.value.photos[currentPhotoIndex.value].name;
+
+    console.log("✅ Immagine preferita selezionata:", favoritePhoto.value);
 
     emit('update:modelValue', {
         ...props.modelValue,
-        favorite_photo: selectedPlaceData.value.photos[currentPhotoIndex.value].name 
+        favorite_photo: favoritePhoto.value
     });
 };
+
 </script>
 
 <template>

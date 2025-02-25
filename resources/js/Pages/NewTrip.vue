@@ -46,6 +46,7 @@ const saveTrip = () => {
     formData.append('title', tripData.value.title);
     formData.append('start_date', tripData.value.startDate);
     formData.append('end_date', tripData.value.endDate);
+    formData.append('favorite_photo', tripData.value.favorite_photo);
 
     tripData.value.places.forEach((place, index) => {
         formData.append(`places[${index}][name]`, place.name);

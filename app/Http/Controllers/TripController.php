@@ -49,10 +49,8 @@ class TripController extends Controller
             'places.*.lng' => 'required|numeric',
             'places.*.photos' => 'array|max:10',
             'places.*.photos.*' => 'nullable|file|image|max:2048',
-            'favorite_photo' => 'nullable|string', // ✅ Permettiamo null
+            'favorite_photo' => 'nullable|string', 
         ]);
-        
-        dd($validated);
     
         $trip = Trip::create([
             'title' => $validated['title'],

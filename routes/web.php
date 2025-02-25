@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\TripController;
+
 use App\Http\Middleware\IpAuthentication;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -13,4 +16,5 @@ Route::middleware([IpAuthentication::class])->group(function () {
     Route::get('/', [TripController::class, 'index'])->name('home');
     Route::get('/new-trip', [TripController::class, 'create'])->name('new-trip');
     Route::post('/new-trip', [TripController::class, 'store'])->name('new-trip.store');
+    Route::get('/map', [MapController::class, 'index'])->name('map');
 });
