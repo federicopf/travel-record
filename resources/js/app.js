@@ -5,7 +5,10 @@ import { Ziggy } from './ziggy'; // Importa il file generato da Ziggy
 import '../css/app.css';
 
 createInertiaApp({
-    resolve: name => import(`./Pages/${name}.vue`).then(module => module.default),
+    resolve: name => {
+        const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
+        return pages[`./Pages/${name}.vue`];
+    },
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
@@ -15,7 +18,7 @@ createInertiaApp({
 });
 
 const loadGoogleMapsScript = () => {
-    if (!window.google && !window.location.pathname.includes('/map')) { 
+    if (!window.google && (window.location.pathname.includes('/new-trip'))) { 
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
         script.async = true;

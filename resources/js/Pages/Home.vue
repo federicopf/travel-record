@@ -23,17 +23,19 @@
             </div>
 
             <div v-if="trips.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div v-for="trip in trips" :key="trip.id"
-                    class="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition">
+                <Link v-for="trip in trips" :key="trip.id" :href="route('trip.show', trip.id)"
+                    class="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition block">
                     
                     <img v-if="trip.image" :src="trip.image" :alt="trip.title" class="w-full h-48 object-cover">
-                    <p v-else class="p-3 flex h-48 italic text-center items-center object-cover">Nessuna immagine per questo viaggio! Male...</p>
+                    <p v-else class="p-3 flex h-48 italic text-center items-center justify-center bg-gray-200">
+                        Nessuna immagine per questo viaggio! Male...
+                    </p>
 
                     <div class="p-4 bg-pink-50">
                         <h2 class="text-xl font-semibold text-pink-700">{{ trip.title }}</h2>
                         <p class="text-sm text-pink-500 italic">{{ trip.start_date }} - {{ trip.end_date }}</p>
                     </div>
-                </div>
+                </Link>
             </div>
 
             <div v-else class="text-center text-gray-500 mt-10">

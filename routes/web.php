@@ -17,4 +17,8 @@ Route::middleware([IpAuthentication::class])->group(function () {
     Route::get('/new-trip', [TripController::class, 'create'])->name('new-trip');
     Route::post('/new-trip', [TripController::class, 'store'])->name('new-trip.store');
     Route::get('/map', [MapController::class, 'index'])->name('map');
+    
+    Route::get('/trip/{trip}', [TripController::class, 'show'])->name('trip.show');
+    Route::get('/trip/{trip}/edit', [TripController::class, 'edit'])->name('trip.edit');
+    Route::put('/trip/{trip}', [TripController::class, 'update'])->name('trip.update');
 });

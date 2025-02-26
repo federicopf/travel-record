@@ -56,10 +56,6 @@ const addMarkers = () => {
     console.log("Markers aggiunti:", markers.value);
 };
 
-watch(() => props.places, () => {
-    addMarkers();
-}, { deep: true });
-
 onMounted(() => {
     initializeMap();
 });
