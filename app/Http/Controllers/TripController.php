@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Photo;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 
@@ -127,66 +128,69 @@ class TripController extends Controller
 
     public function update(Request $request, Trip $trip)
     {
-        dd($request->all());
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'places' => 'required|array|min:1',
+            'places.*.id' => 'nullable|integer|exists:places,id',
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
             'places.*.photos' => 'array|max:10',
-            'places.*.photos.*' => 'nullable', // Può essere file o stringa
+            'places.*.photos.*.id' => 'nullable|integer|exists:photos,id',
+            'places.*.photos.*.path' => 'nullable|string',
+            'newPhotos.*.*' => 'file|image|max:2048',
+            'deletedPhotos' => 'array',
+            'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
         ]);
-    
-        // **Aggiornamento dati del viaggio**
+
         $trip->update([
             'title' => $validated['title'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
         ]);
-    
-        // **Cancellazione di tutte le foto e cartelle associate**
-        foreach ($trip->places as $place) {
-            foreach ($place->photos as $photo) {
+
+        $favoriteImagePath = null;
+
+        if (!empty($validated['deletedPhotos'])) {
+            $photosToDelete = Photo::whereIn('id', $validated['deletedPhotos'])->get();
+
+            foreach ($photosToDelete as $photo) {
                 Storage::disk('public')->delete($photo->path);
                 $photo->delete();
             }
-            $place->delete();
         }
-    
-        $favoriteImagePath = null;
-    
-        // **Aggiunta di nuovi luoghi e immagini**
+
         foreach ($validated['places'] as $placeData) {
-            $place = $trip->places()->create([
-                'name' => $placeData['name'],
-                'lat' => $placeData['lat'],
-                'lng' => $placeData['lng'],
-            ]);
-    
-            if (!empty($placeData['photos'])) {
-                foreach ($placeData['photos'] as $photo) {
-                    // **Se è un file, lo salviamo**
-                    if ($photo instanceof \Illuminate\Http\UploadedFile) {
-                        $path = $photo->store("uploads/trips/{$trip->id}/{$place->id}", 'public');
-                    } else {
-                        // **Se è una stringa, è già un percorso valido**
-                        $path = $photo;
-                    }
-    
-                    $photoRecord = $place->photos()->create(['path' => $path]);
-    
-                    if ($validated['favorite_photo'] === $path) {
+            $place = $trip->places()->updateOrCreate(
+                ['id' => $placeData['id']],
+                [
+                    'name' => $placeData['name'],
+                    'lat' => $placeData['lat'],
+                    'lng' => $placeData['lng'],
+                ]
+            );
+
+            $placeId = $place->id; 
+            
+            if (!empty($validated['newPhotos'][$placeId])) {
+                foreach ($validated['newPhotos'][$placeId] as $photoFile) {
+                    $path = $photoFile->store("uploads/trips/{$trip->id}/{$placeId}", 'public');
+
+                    $photo = $place->photos()->create([
+                        'path' => $path,
+                    ]);
+
+                    if ($validated['favorite_photo'] === $photoFile->getClientOriginalName()) {
                         $favoriteImagePath = $path;
                     }
                 }
             }
+
         }
-    
-        // **Aggiorna immagine di copertina del viaggio**
+
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
@@ -195,7 +199,7 @@ class TripController extends Controller
                 $trip->update(['image' => $firstPhoto]);
             }
         }
-    
+
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
 

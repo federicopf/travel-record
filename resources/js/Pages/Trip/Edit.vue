@@ -10,31 +10,34 @@ const form = useForm({
     title: props.trip.title || '',
     start_date: props.trip.start_date || '',
     end_date: props.trip.end_date || '',
-    places: props.trip.places.length > 0 ? props.trip.places.map(place => ({
+    places: props.trip.places.map(place => ({
         id: place.id,
         name: place.name,
         lat: place.lat,
         lng: place.lng,
         photos: place.photos.map(photo => ({
-            id: photo.id, path: photo.path, is_favorite: photo.path === props.trip.image
+            id: photo.id,
+            path: photo.path,
+            is_favorite: photo.path === props.trip.image
         }))
-    })) : [], 
-    newPhotos: {}, 
-    deletedPhotos: [], 
+    })),
+    newPhotos: {},
+    deletedPhotos: [],
     favorite_photo: props.trip.image || null,
 });
 
 const fileInputs = ref({});
 
+// Gestisce il caricamento delle immagini
 const handleFileUpload = (event, placeIndex) => {
     const files = Array.from(event.target.files);
+
     if (!form.newPhotos[placeIndex]) {
         form.newPhotos[placeIndex] = [];
     }
 
     files.forEach(file => {
         const reader = new FileReader();
-        console.log('s');
         reader.onload = (e) => {
             form.newPhotos[placeIndex].push({ 
                 file, 
@@ -50,15 +53,17 @@ const handleFileUpload = (event, placeIndex) => {
     }
 };
 
+// Rimuove un’immagine esistente o nuova
 const removePhoto = (placeIndex, photoIndex, isNew = false) => {
     if (isNew) {
         form.newPhotos[placeIndex].splice(photoIndex, 1);
     } else {
-        const deletedPhoto = form.places[placeIndex].photos.splice(photoIndex, 1)[0];
-        form.deletedPhotos.push(deletedPhoto.path);
+        const removedPhoto = form.places[placeIndex].photos.splice(photoIndex, 1)[0];
+        form.deletedPhotos.push(removedPhoto.id);
     }
 };
 
+// Imposta un’immagine come preferita
 const setFavorite = (photo, isNew) => {
     form.favorite_photo = isNew ? photo.preview : photo.path;
 
@@ -73,6 +78,7 @@ const setFavorite = (photo, isNew) => {
     photo.is_favorite = true;
 };
 
+
 const triggerFileInput = (placeIndex) => {
     if (fileInputs.value[placeIndex]) {
         fileInputs.value[placeIndex].click();
@@ -81,39 +87,44 @@ const triggerFileInput = (placeIndex) => {
 
 const submit = () => {
     const formData = new FormData();
-    
-    formData.append("title", form.title);
-    formData.append("start_date", form.start_date);
-    formData.append("end_date", form.end_date);
-    formData.append("favorite_photo", form.favorite_photo || "");
 
-    form.places.forEach((place, placeIndex) => {
-        formData.append(`places[${placeIndex}][id]`, place.id);
-        formData.append(`places[${placeIndex}][name]`, place.name);
-        formData.append(`places[${placeIndex}][lat]`, place.lat);
-        formData.append(`places[${placeIndex}][lng]`, place.lng);
+    formData.append('title', form.title);
+    formData.append('start_date', form.start_date);
+    formData.append('end_date', form.end_date);
+    formData.append('favorite_photo', form.favorite_photo || '');
 
+    // Aggiunge i luoghi
+    form.places.forEach((place, index) => {
+        formData.append(`places[${index}][id]`, place.id);
+        formData.append(`places[${index}][name]`, place.name);
+        formData.append(`places[${index}][lat]`, place.lat);
+        formData.append(`places[${index}][lng]`, place.lng);
+
+        // Aggiunge le foto già esistenti
         place.photos.forEach((photo, photoIndex) => {
-            formData.append(`places[${placeIndex}][photos][${photoIndex}][path]`, photo.path);
+            formData.append(`places[${index}][photos][${photoIndex}][id]`, photo.id);
+            formData.append(`places[${index}][photos][${photoIndex}][path]`, photo.path);
+            formData.append(`places[${index}][photos][${photoIndex}][is_favorite]`, photo.is_favorite ? 1 : 0);
         });
-
-        if (form.newPhotos[placeIndex]) {
-            form.newPhotos[placeIndex].forEach((photo, newIndex) => {
-                formData.append(`newPhotos[${placeIndex}][${newIndex}]`, photo.file);
-            });
-        }
     });
 
-    form.deletedPhotos.forEach((photoPath, index) => {
-        formData.append(`deletedPhotos[${index}]`, photoPath);
+    // Aggiunge le nuove foto caricate
+    Object.keys(form.newPhotos).forEach(placeIndex => {
+        form.newPhotos[placeIndex].forEach((photo, newIndex) => {
+            formData.append(`newPhotos[${placeIndex}][${newIndex}]`, photo.file);
+        });
+    });
+
+    // Aggiunge le immagini eliminate
+    form.deletedPhotos.forEach((photoId, index) => {
+        formData.append(`deletedPhotos[${index}]`, photoId);
     });
 
     router.post(route('trip.update', props.trip.id), formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+        forceFormData: true, // Inertia gestisce FormData in modo automatico
     });
 };
+
 </script>
 
 <template>
@@ -140,7 +151,8 @@ const submit = () => {
                         <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
 
                         <input ref="fileInputs" type="file" multiple accept="image/*" 
-                            @change="handleFileUpload($event, placeIndex)" class="hidden">
+                            @change="handleFileUpload($event, placeIndex)"
+                            class="hidden">
 
                         <button @click="triggerFileInput(placeIndex)"
                             class="mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition flex items-center gap-2">
@@ -157,6 +169,20 @@ const submit = () => {
                                 </button>
 
                                 <button @click="removePhoto(placeIndex, photoIndex, false)"
+                                    class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
+                                    <XMarkIcon class="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div v-for="(newPhoto, newIndex) in form.newPhotos[placeIndex]" :key="newIndex" class="relative">
+                                <img :src="newPhoto.preview" class="w-full h-40 object-cover rounded-lg">
+
+                                <button @click="setFavorite(newPhoto, true)"
+                                    class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
+                                    <StarIcon :class="newPhoto.is_favorite ? 'text-yellow-500' : 'text-gray-400'" class="w-6 h-6" />
+                                </button>
+
+                                <button @click="removePhoto(placeIndex, newIndex, true)"
                                     class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
                                     <XMarkIcon class="w-5 h-5" />
                                 </button>
