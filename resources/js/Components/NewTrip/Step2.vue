@@ -39,10 +39,6 @@ onMounted(() => {
         <div class="flex gap-2">
             <input ref="placeInput" v-model="newPlace" placeholder="Es. Colosseo, Roma"
                 class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-300">
-
-            <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                +
-            </button>
         </div>
 
         <ul class="mt-4">

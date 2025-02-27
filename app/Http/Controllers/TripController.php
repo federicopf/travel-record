@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 use App\Models\Trip;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class TripController extends Controller
@@ -22,8 +23,8 @@ class TripController extends Controller
             return [
                 'id' => $trip->id,
                 'title' => $trip->title,
-                'start_date' => $trip->start_date,
-                'end_date' => $trip->end_date,
+                'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
+                'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),
                 'image' => $trip->image ? "/storage/{$trip->image}" : null, // Percorso corretto
             ];
         });
@@ -95,11 +96,16 @@ class TripController extends Controller
     
         return Redirect::route('home')->with('success', 'Viaggio aggiunto con successo!');
     }
-    
+        
     public function show(Trip $trip)
     {
         $trip->image = $trip->image ? "/storage/{$trip->image}" : null;
 
+        // Formattazione delle date
+        $trip->start_date = Carbon::parse($trip->start_date)->format('d/m/Y');
+        $trip->end_date = Carbon::parse($trip->end_date)->format('d/m/Y');
+
+        // Modifica i percorsi delle immagini nei luoghi e nelle foto
         $trip->places->each(function ($place) {
             $place->photos->each(function ($photo) {
                 $photo->path = "/storage/{$photo->path}";
@@ -195,9 +201,13 @@ class TripController extends Controller
             }
         }
     
-        // Se l'utente ha selezionato una foto già esistente come preferita, la assegniamo
         if (!$favoriteImagePath && !empty($validated['favorite_photo'])) {
+            if (str_contains($validated['favorite_photo'], 'uploads/')) {
+                $validated['favorite_photo'] = 'uploads/' . explode('uploads/', $validated['favorite_photo'])[1];
+            }
+                
             $existingPhoto = Photo::where('path', $validated['favorite_photo'])->first();
+            
             if ($existingPhoto) {
                 $favoriteImagePath = $existingPhoto->path;
             }
@@ -217,6 +227,4 @@ class TripController extends Controller
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
     
-    
-
 }
