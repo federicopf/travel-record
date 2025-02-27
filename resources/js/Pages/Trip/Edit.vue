@@ -20,6 +20,7 @@ const form = useForm({
         }))
     })) : [], 
     newPhotos: {}, 
+    deletedPhotos: [], 
     favorite_photo: props.trip.image || null,
 });
 
@@ -27,18 +28,18 @@ const fileInputs = ref({});
 
 const handleFileUpload = (event, placeIndex) => {
     const files = Array.from(event.target.files);
-
     if (!form.newPhotos[placeIndex]) {
         form.newPhotos[placeIndex] = [];
     }
 
     files.forEach(file => {
         const reader = new FileReader();
+        console.log('s');
         reader.onload = (e) => {
             form.newPhotos[placeIndex].push({ 
                 file, 
                 preview: e.target.result, 
-                is_favorite: false // ✅ Anche le nuove immagini possono essere preferite
+                is_favorite: false 
             });
         };
         reader.readAsDataURL(file);
@@ -49,12 +50,12 @@ const handleFileUpload = (event, placeIndex) => {
     }
 };
 
-
 const removePhoto = (placeIndex, photoIndex, isNew = false) => {
     if (isNew) {
         form.newPhotos[placeIndex].splice(photoIndex, 1);
     } else {
-        form.places[placeIndex].photos.splice(photoIndex, 1);
+        const deletedPhoto = form.places[placeIndex].photos.splice(photoIndex, 1)[0];
+        form.deletedPhotos.push(deletedPhoto.path);
     }
 };
 
@@ -79,9 +80,40 @@ const triggerFileInput = (placeIndex) => {
 };
 
 const submit = () => {
-    router.put(route('trip.update', props.trip.id), form);
-};
+    const formData = new FormData();
+    
+    formData.append("title", form.title);
+    formData.append("start_date", form.start_date);
+    formData.append("end_date", form.end_date);
+    formData.append("favorite_photo", form.favorite_photo || "");
 
+    form.places.forEach((place, placeIndex) => {
+        formData.append(`places[${placeIndex}][id]`, place.id);
+        formData.append(`places[${placeIndex}][name]`, place.name);
+        formData.append(`places[${placeIndex}][lat]`, place.lat);
+        formData.append(`places[${placeIndex}][lng]`, place.lng);
+
+        place.photos.forEach((photo, photoIndex) => {
+            formData.append(`places[${placeIndex}][photos][${photoIndex}][path]`, photo.path);
+        });
+
+        if (form.newPhotos[placeIndex]) {
+            form.newPhotos[placeIndex].forEach((photo, newIndex) => {
+                formData.append(`newPhotos[${placeIndex}][${newIndex}]`, photo.file);
+            });
+        }
+    });
+
+    form.deletedPhotos.forEach((photoPath, index) => {
+        formData.append(`deletedPhotos[${index}]`, photoPath);
+    });
+
+    router.post(route('trip.update', props.trip.id), formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
 </script>
 
 <template>
@@ -90,7 +122,6 @@ const submit = () => {
             <h1 class="text-3xl font-bold text-pink-600 mb-6">Modifica Viaggio</h1>
 
             <div class="bg-white p-6 rounded-lg shadow-lg">
-                <!-- Modifica dati principali -->
                 <label class="block mb-2 text-gray-700">Destinazione</label>
                 <input v-model="form.title" type="text"
                     class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-300">
@@ -103,53 +134,29 @@ const submit = () => {
                 <input v-model="form.end_date" type="date"
                     class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-300">
 
-                <!-- Luoghi visitati -->
                 <h2 class="text-xl font-bold text-gray-700 mt-6">Luoghi visitati</h2>
                 <ul class="mt-4">
                     <li v-for="(place, placeIndex) in form.places" :key="place.id" class="bg-gray-100 p-4 rounded-lg mb-2">
                         <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
 
                         <input ref="fileInputs" type="file" multiple accept="image/*" 
-                            @change="handleFileUpload($event, placeIndex)"
-                            class="hidden">
+                            @change="handleFileUpload($event, placeIndex)" class="hidden">
 
-                        <!-- Bottone personalizzato per il caricamento -->
                         <button @click="triggerFileInput(placeIndex)"
                             class="mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition flex items-center gap-2">
                             Aggiungi Immagini
                         </button>
 
-                        <!-- Anteprima immagini -->
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-                            <!-- Immagini già caricate -->
                             <div v-for="(photo, photoIndex) in place.photos" :key="photo.id" class="relative">
                                 <img :src="photo.path" class="w-full h-40 object-cover rounded-lg">
 
-                                <!-- Icona per impostare come preferita -->
                                 <button @click="setFavorite(photo, false)"
                                     class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
                                     <StarIcon :class="photo.is_favorite ? 'text-yellow-500' : 'text-gray-400'" class="w-6 h-6" />
                                 </button>
 
-                                <!-- Icona per eliminare l'immagine -->
                                 <button @click="removePhoto(placeIndex, photoIndex, false)"
-                                    class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
-                                    <XMarkIcon class="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            <!-- Nuove immagini caricate -->
-                            <div v-for="(newPhoto, newIndex) in form.newPhotos[placeIndex]" :key="newIndex" class="relative">
-                                <img :src="newPhoto.preview" class="w-full h-40 object-cover rounded-lg">
-
-                                <!-- Icona per impostare come preferita -->
-                                <button @click="setFavorite(newPhoto, true)"
-                                    class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
-                                    <StarIcon :class="newPhoto.is_favorite ? 'text-yellow-500' : 'text-gray-400'" class="w-6 h-6" />
-                                </button>
-
-                                <!-- Icona per eliminare le nuove immagini -->
-                                <button @click="removePhoto(placeIndex, newIndex, true)"
                                     class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
                                     <XMarkIcon class="w-5 h-5" />
                                 </button>
@@ -158,7 +165,6 @@ const submit = () => {
                     </li>
                 </ul>
 
-                <!-- Pulsante Salva -->
                 <div class="flex justify-between mt-6">
                     <button @click="submit"
                         class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition">
