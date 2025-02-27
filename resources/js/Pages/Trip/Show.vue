@@ -58,6 +58,7 @@ const initializeMap = async () => {
                 position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
                 map: mapInstance.value,
                 icon: {
+                    //FIXME ICONA PORTALA INTERNA
                     url: 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png',
                     scaledSize: new google.maps.Size(40, 40),
                     anchor: new google.maps.Point(20, 40)
