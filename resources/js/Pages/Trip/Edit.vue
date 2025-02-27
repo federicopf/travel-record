@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { XMarkIcon, StarIcon } from '@heroicons/vue/24/solid';
+import { Link } from '@inertiajs/vue3';
+
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
@@ -65,7 +67,7 @@ const removePhoto = (placeIndex, photoIndex, isNew = false) => {
 
 // Imposta un’immagine come preferita
 const setFavorite = (photo, isNew) => {
-    form.favorite_photo = isNew ? photo.preview : photo.path;
+    form.favorite_photo = isNew ? photo.file.name : photo.path;
 
     form.places.forEach(place => {
         place.photos.forEach(p => p.is_favorite = false);
@@ -80,7 +82,6 @@ const setFavorite = (photo, isNew) => {
 
 
 const triggerFileInput = (placeIndex) => {
-    console.log(placeIndex);
     if (fileInputs.value[placeIndex]) {
         fileInputs.value[placeIndex].click();
     }
@@ -136,6 +137,13 @@ const submit = () => {
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
             <h1 class="text-3xl font-bold text-pink-600 mb-6">Modifica Viaggio</h1>
+
+            <div class="flex my-4">
+                <Link :href="route('trip.show', trip.id)"
+                    class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                    Indietro
+                </Link>
+            </div>
 
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <label class="block mb-2 text-gray-700">Destinazione</label>

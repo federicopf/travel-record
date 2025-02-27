@@ -145,24 +145,27 @@ class TripController extends Controller
             'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
         ]);
-
+    
+        // Aggiorna i dati base del viaggio
         $trip->update([
             'title' => $validated['title'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
         ]);
-
-        $favoriteImagePath = null;
-
+    
+        // Elimina le foto rimosse dall'utente
         if (!empty($validated['deletedPhotos'])) {
             $photosToDelete = Photo::whereIn('id', $validated['deletedPhotos'])->get();
-
             foreach ($photosToDelete as $photo) {
                 Storage::disk('public')->delete($photo->path);
                 $photo->delete();
             }
         }
-
+    
+        // Variabile per memorizzare il path della foto preferita
+        $favoriteImagePath = null;
+    
+        // Aggiorna o crea i luoghi e le foto
         foreach ($validated['places'] as $placeData) {
             $place = $trip->places()->updateOrCreate(
                 ['id' => $placeData['id']],
@@ -172,35 +175,48 @@ class TripController extends Controller
                     'lng' => $placeData['lng'],
                 ]
             );
-
+    
             $placeId = $place->id; 
             
+            // Gestisce le nuove foto caricate
             if (!empty($validated['newPhotos'][$placeId])) {
                 foreach ($validated['newPhotos'][$placeId] as $photoFile) {
                     $path = $photoFile->store("uploads/trips/{$trip->id}/{$placeId}", 'public');
-
+    
                     $photo = $place->photos()->create([
                         'path' => $path,
                     ]);
-
+    
+                    // Se questa immagine è stata selezionata come favorita, la salviamo
                     if ($validated['favorite_photo'] === $photoFile->getClientOriginalName()) {
                         $favoriteImagePath = $path;
                     }
                 }
             }
-
         }
-
+    
+        // Se l'utente ha selezionato una foto già esistente come preferita, la assegniamo
+        if (!$favoriteImagePath && !empty($validated['favorite_photo'])) {
+            $existingPhoto = Photo::where('path', $validated['favorite_photo'])->first();
+            if ($existingPhoto) {
+                $favoriteImagePath = $existingPhoto->path;
+            }
+        }
+    
+        // Aggiorna l'immagine principale del viaggio
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
+            // Se nessuna immagine è preferita, mettiamo la prima foto disponibile
             $firstPhoto = optional($trip->places->first()?->photos->first())->path;
             if ($firstPhoto) {
                 $trip->update(['image' => $firstPhoto]);
             }
         }
-
+    
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
+    
+    
 
 }
