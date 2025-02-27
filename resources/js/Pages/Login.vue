@@ -1,20 +1,17 @@
 <script setup>
-
 import { ref } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 
+const email = ref('');
 const password = ref('');
 const error = ref(null);
 
 const submitForm = () => {
-    console.log("🟢 Inviando richiesta con Inertia...");
-    
-    router.post(route('login.post'), { password: password.value }, {
+    router.post(route('login.post'), { email: email.value, password: password.value }, {
         onError: (errors) => {
-            console.error("🔴 Errore ricevuto da Inertia:", errors);
-            if (errors.password) {
-                error.value = errors.password;
+            if (errors.email) {
+                error.value = errors.email;
             }
         },
         onSuccess: () => {
@@ -27,10 +24,20 @@ const submitForm = () => {
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-pink-400 to-pink-600">
       <div class="bg-white p-8 rounded-2xl shadow-xl w-96">
-          <h1 class="text-3xl font-bold text-center text-pink-600 mb-2">Benvenuto!</h1>
-          <p class="text-gray-500 text-center mb-6">Inserisci la password per accedere</p>
+          <h1 class="text-3xl font-bold text-center text-pink-600 mb-2">Accedi</h1>
+          <p class="text-gray-500 text-center mb-6">Inserisci le tue credenziali</p>
 
           <form @submit.prevent="submitForm">
+              <div class="mb-4">
+                  <input 
+                      type="email"
+                      v-model="email"
+                      placeholder="Email"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      required
+                  />
+              </div>
+
               <div class="mb-4">
                   <input 
                       type="password"

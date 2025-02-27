@@ -3,30 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // Mostra la pagina di login
     public function showLogin()
     {
         return Inertia::render('Login');
     }
 
+    // Gestisce il login
     public function login(Request $request)
     {
-        $password = $request->input('password');
-    
-        if ($password !== 'alessia123') {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'password' => 'Password errata',
+                'email' => 'Le credenziali non sono corrette.',
             ]);
         }
-    
-        Cache::put("allowed_ip_{$request->ip()}", true, now()->addHours(24));
-    
-        return Inertia::location(route('home'));
+
+        $request->session()->regenerate();
+
+        return redirect()->route('home');
+    }
+
+    // Logout e distruzione sessione
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }
