@@ -80,12 +80,14 @@ const setFavorite = (photo, isNew) => {
 
 
 const triggerFileInput = (placeIndex) => {
+    console.log(placeIndex);
     if (fileInputs.value[placeIndex]) {
         fileInputs.value[placeIndex].click();
     }
 };
 
 const submit = () => {
+
     const formData = new FormData();
 
     formData.append('title', form.title);
@@ -110,9 +112,12 @@ const submit = () => {
 
     // Aggiunge le nuove foto caricate
     Object.keys(form.newPhotos).forEach(placeIndex => {
-        form.newPhotos[placeIndex].forEach((photo, newIndex) => {
-            formData.append(`newPhotos[${placeIndex}][${newIndex}]`, photo.file);
-        });
+        const placeId = form.places[placeIndex]?.id; // Recupera l'ID reale del posto
+        if (placeId) {
+            form.newPhotos[placeIndex].forEach((photo, newIndex) => {
+                formData.append(`newPhotos[${placeId}][${newIndex}]`, photo.file);
+            });
+        }
     });
 
     // Aggiunge le immagini eliminate
