@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Inertia\Inertia;
+
 use App\Models\Trip;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class MapController extends Controller
 {
     public function index()
     {
-        $places = Trip::with('places', 'places.photos')->where('user_id', Auth::id())
+        $places = Trip::with('places', 'places.photos')
+            ->where('user_id', Auth::id())
             ->get()
             ->flatMap(function ($trip) {
                 return $trip->places->map(function ($place) use ($trip) {
