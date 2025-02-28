@@ -3,15 +3,15 @@ import { ref } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 
-const email = ref('');
+const username = ref('');
 const password = ref('');
 const error = ref(null);
 
 const submitForm = () => {
-    router.post(route('login.post'), { email: email.value, password: password.value }, {
+    router.post(route('login.post'), { username: username.value, password: password.value }, {
         onError: (errors) => {
-            if (errors.email) {
-                error.value = errors.email;
+            if (errors.username) {
+                error.value = errors.username;
             }
         },
         onSuccess: () => {
@@ -30,9 +30,9 @@ const submitForm = () => {
           <form @submit.prevent="submitForm">
               <div class="mb-4">
                   <input 
-                      type="email"
-                      v-model="email"
-                      placeholder="Email"
+                      type="username"
+                      v-model="username"
+                      placeholder="Username"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
                       required
                   />

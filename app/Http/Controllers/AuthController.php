@@ -15,17 +15,16 @@ class AuthController extends Controller
         return Inertia::render('Login');
     }
 
-    // Gestisce il login
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|string', 
             'password' => 'required',
         ]);
 
         if (!Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'email' => 'Le credenziali non sono corrette.',
+                'username' => 'Le credenziali non sono corrette.',
             ]);
         }
 

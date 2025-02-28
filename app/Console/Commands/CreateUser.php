@@ -17,16 +17,19 @@ class CreateUser extends Command
     {
         $name = $this->ask('Inserisci il nome');
         $email = $this->ask('Inserisci l\'email');
+        $username = $this->ask('Inserisci l\'username');
         $password = $this->secret('Inserisci la password');
 
         // Validazione
         $validator = Validator::make([
             'name' => $name,
             'email' => $email,
+            'username' => $username,
             'password' => $password,
         ], [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
+            'username' => 'required|unique:users',
             'password' => 'required|min:6',
         ]);
 
@@ -35,12 +38,12 @@ class CreateUser extends Command
             return;
         }
 
-        // Creazione utente con email verificata
         $user = User::create([
             'name' => $name,
             'email' => $email,
+            'username' => $username,
             'password' => Hash::make($password),
-            'email_verified_at' => Carbon::now(), // ✅ Imposta la verifica automatica
+            'email_verified_at' => Carbon::now(), 
         ]);
 
         $this->info("✅ Utente creato con successo! ID: {$user->id}");
