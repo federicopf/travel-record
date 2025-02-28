@@ -2,30 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Photo;
-use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
-use Inertia\Inertia;
-
-use App\Models\Trip;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+
+use App\Models\Photo;
+use App\Models\Trip;
 
 class TripController extends Controller
 {
     public function index()
     {
-        $trips = Trip::with(['places.photos'])->get();
+        $trips = Trip::with(['places.photos'])
+            ->where('user_id', Auth::id())
+            ->get();
 
-        // Aggiunge la prima immagine di ogni trip per l'anteprima
-        $trips = $trips->map(function ($trip) {
+
+            $trips = $trips->map(function ($trip) {
             return [
                 'id' => $trip->id,
                 'title' => $trip->title,
                 'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
                 'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),
-                'image' => $trip->image ? "/storage/{$trip->image}" : null, // Percorso corretto
+                'image' => $trip->image ? "/storage/{$trip->image}" : null,
             ];
         });
 
@@ -59,6 +62,7 @@ class TripController extends Controller
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'image' => null,
+            'user_id' => Auth::id()
         ]);
     
         $favoritePhotoName = $validated['favorite_photo'] ?? null;
@@ -101,11 +105,9 @@ class TripController extends Controller
     {
         $trip->image = $trip->image ? "/storage/{$trip->image}" : null;
 
-        // Formattazione delle date
         $trip->start_date = Carbon::parse($trip->start_date)->format('d/m/Y');
         $trip->end_date = Carbon::parse($trip->end_date)->format('d/m/Y');
 
-        // Modifica i percorsi delle immagini nei luoghi e nelle foto
         $trip->places->each(function ($place) {
             $place->photos->each(function ($photo) {
                 $photo->path = "/storage/{$photo->path}";
@@ -119,6 +121,10 @@ class TripController extends Controller
     
     public function edit(Trip $trip)
     {
+        if(!$this->authorizeTrip($trip->id)){
+            return Redirect::route('home');
+        }
+
         $trip->image = $trip->image ? asset("storage/{$trip->image}") : null;
 
         foreach ($trip->places as $place) {
@@ -134,6 +140,10 @@ class TripController extends Controller
 
     public function update(Request $request, Trip $trip)
     {
+        if(!$this->authorizeTrip($trip->id)){
+            return Redirect::route('home');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -151,7 +161,7 @@ class TripController extends Controller
             'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
         ]);
-    
+
         // Aggiorna i dati base del viaggio
         $trip->update([
             'title' => $validated['title'],
@@ -226,5 +236,15 @@ class TripController extends Controller
     
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
-    
+ 
+    private function authorizeTrip(int $tripId)
+    {
+        $trip = Trip::find($tripId);
+
+        if (!$trip || $trip->user_id !== Auth::id()) {
+            return false;
+        }
+
+        return true;
+    }
 }
