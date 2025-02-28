@@ -100,25 +100,32 @@ onMounted(() => {
 
             <!-- Luoghi visitati -->
             <h2 class="text-2xl font-bold text-gray-700 mt-6">Luoghi visitati</h2>
-            <ul class="mt-4">
-                <li v-for="place in trip.places" :key="place.id" class="bg-gray-100 p-4 rounded-lg mb-2">
+            <ul class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <li v-for="place in trip.places" :key="place.id" class="bg-gray-100 p-4 rounded-lg">
                     <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
 
-                    <!-- Swiper Carousel -->
-                    <swiper
-                        :modules="[Navigation, Pagination]"
-                        :navigation="true"
-                        :pagination="{ clickable: true }"
-                        class="my-4 rounded-lg shadow-lg">
-                        
-                        <swiper-slide v-for="(photo, index) in place.photos" :key="photo.id">
-                            <img 
-                                :src="photo.path" 
-                                class="w-full h-60 object-cover rounded-lg cursor-pointer"
-                                @click="openFullscreenCarousel(place.photos, index)"
-                            >
-                        </swiper-slide>
-                    </swiper>
+                    <!-- Controllo se ci sono immagini -->
+                    <div v-if="place.photos.length > 0">
+                        <swiper
+                            :modules="[Navigation, Pagination]"
+                            :navigation="true"
+                            :pagination="{ clickable: true }"
+                            class="my-4 rounded-lg shadow-lg">
+                            
+                            <swiper-slide v-for="(photo, index) in place.photos" :key="photo.id">
+                                <img 
+                                    :src="photo.path" 
+                                    class="w-full h-60 object-cover rounded-lg cursor-pointer"
+                                    @click="openFullscreenCarousel(place.photos, index)"
+                                >
+                            </swiper-slide>
+                        </swiper>
+                    </div>
+
+                    <!-- Messaggio alternativo se non ci sono immagini -->
+                    <div v-else class="my-4 p-4 bg-red-100 text-red-700 text-center rounded-lg">
+                        Nessuna immagine per questo posto! Male...
+                    </div>
                 </li>
             </ul>
         </div>
