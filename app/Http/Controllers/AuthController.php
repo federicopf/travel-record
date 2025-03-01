@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -18,6 +17,7 @@ class AuthController extends Controller
         return Inertia::render('Login');
     }
 
+    // Gestisce il login con username e password
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -27,13 +27,41 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'username' => 'Le credenziali non sono corrette.',
+                'username' => __('auth.failed'), 
             ]);
         }
 
         $request->session()->regenerate();
 
         return redirect()->route('home');
+    }
+
+    // Mostra la pagina di registrazione
+    public function showRegister()
+    {
+        return Inertia::render('Register');
+    }
+
+    // Gestisce la registrazione di un nuovo utente
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('home')->with('success', 'Registrazione completata con successo!');
     }
 
     // Logout e distruzione sessione
@@ -46,6 +74,7 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
+    // Cambia la password dell'utente autenticato
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -57,7 +86,7 @@ class AuthController extends Controller
 
         if (!Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
-                'current_password' => 'La password attuale non è corretta.',
+                'current_password' => __('passwords.current'), // Usa il file di traduzione
             ]);
         }
 

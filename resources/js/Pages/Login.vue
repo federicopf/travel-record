@@ -69,6 +69,12 @@ const togglePasswordVisibility = () => {
               </button>
 
               <p v-if="error" class="text-red-500 text-sm text-center mt-4">{{ error }}</p>
+
+              <!-- Link alla Registrazione -->
+              <p class="text-gray-500 text-sm text-center mt-4">
+                  Non hai un account? 
+                  <a :href="route('register')" class="text-pink-600 font-semibold hover:underline">Registrati</a>
+              </p>
           </form>
       </div>
   </div>
