@@ -21,4 +21,6 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     Route::get('/trip/{trip}', [TripController::class, 'show'])->name('trip.show');
     Route::get('/trip/{trip}/edit', [TripController::class, 'edit'])->name('trip.edit');
     Route::post('/trip/{trip}', [TripController::class, 'update'])->name('trip.update');
+
+    Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 });
