@@ -1,13 +1,22 @@
 <script setup>
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref, nextTick, computed } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps(['places']);
+const page = usePage();
+const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+
 const map = ref(null);
 const mapInstance = ref(null);
 const markers = ref([]);
 const infoWindow = ref(null);
+
+// Computed property per il titolo dinamico
+const mapTitle = computed(() => {
+    return user?.type === 'couple' ? 'Mappa dei nostri viaggi' : 'Mappa dei miei viaggi';
+});
 
 const initializeMap = async () => {
     await nextTick(); // Assicura che il DOM sia montato prima di iniziare
@@ -25,14 +34,14 @@ const initializeMap = async () => {
 
     try {
         const google = await loader.load();
-        const center = { lat: 41.9028, lng: 12.4964 }; 
+        const center = { lat: 41.9028, lng: 12.4964 };
 
         mapInstance.value = new google.maps.Map(map.value, {
             center,
             zoom: 5,
         });
 
-        infoWindow.value = new google.maps.InfoWindow(); // Inizializza InfoWindow
+        infoWindow.value = new google.maps.InfoWindow();
 
         addMarkers(google);
     } catch (error) {
@@ -43,7 +52,6 @@ const initializeMap = async () => {
 const addMarkers = (google) => {
     if (!mapInstance.value) return;
 
-    // Rimuove i marker precedenti
     markers.value.forEach(marker => marker.setMap(null));
     markers.value = [];
 
@@ -52,15 +60,13 @@ const addMarkers = (google) => {
             position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
             map: mapInstance.value,
             icon: {
-                //FIXME ICONA PORTALA INTERNA
                 url: 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png',
                 scaledSize: new google.maps.Size(40, 40),
-                anchor: new google.maps.Point(20, 40) 
-            }, 
+                anchor: new google.maps.Point(20, 40)
+            },
             title: place.name,
         });
 
-        // Evento click per mostrare il box informativo con stile migliorato
         marker.addListener("click", () => {
             let imageGallery = "";
             if (place.images && place.images.length > 0) {
@@ -123,7 +129,9 @@ onMounted(() => {
 <template>
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
-            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6 text-center`">Mappa dei nostri viaggi</h1>
+            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6 text-center`">
+                {{ mapTitle }}
+            </h1>
 
             <div ref="map" class="w-full h-[500px] rounded-lg shadow"></div>
         </div>

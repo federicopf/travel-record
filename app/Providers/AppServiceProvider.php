@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
                     'user' => $user ? [
                         'id' => $user->id,
                         'name' => $user->name,
+                        'type' => $user->type,
                         'color_scheme' => $user->theme ? $user->theme->color_scheme : 'blue', 
                     ] : null
                 ];
