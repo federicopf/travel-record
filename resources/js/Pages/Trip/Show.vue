@@ -84,11 +84,11 @@ onMounted(() => {
                 <img :src="trip.image" :alt="trip.title" class="w-full h-64 object-cover rounded-lg shadow-lg">
             </div>
 
-            <h1 class="text-3xl font-bold text-pink-600 mb-6">{{ trip.title }}</h1>
+            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6`">{{ trip.title }}</h1>
 
             <div class="flex my-4">
                 <Link :href="route('trip.edit', trip.id)"
-                    class="bg-pink-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition duration-300">
+                :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-${$colorScheme}-600 transition duration-300`">
                     Modifica Viaggio
                 </Link>
             </div>

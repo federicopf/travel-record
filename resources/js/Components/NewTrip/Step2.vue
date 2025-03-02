@@ -38,7 +38,7 @@ onMounted(() => {
 
         <div class="flex gap-2">
             <input ref="placeInput" v-model="newPlace" placeholder="Es. Colosseo, Roma"
-                class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-pink-300">
+                :class="`w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
         </div>
 
         <ul class="mt-4">

@@ -72,7 +72,7 @@ const saveTrip = () => {
 <template>
     <AppLayout>
         <div class="max-w-lg mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold text-center text-pink-600 mb-6">Aggiungi un nuovo viaggio</h1>
+            <h1 :class="`text-3xl font-bold text-center text-${$colorScheme}-600 mb-6`">Aggiungi un nuovo viaggio</h1>
 
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <Step1 v-if="step === 1" v-model="tripData" />
@@ -87,7 +87,7 @@ const saveTrip = () => {
                     </button>
                     <button v-if="step < 3" @click="nextStep" :disabled="!canProceed"
                         class="px-4 py-2 rounded transition"
-                        :class="canProceed ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'">
+                        :class="canProceed ? '`bg-${$colorScheme}-600 text-white hover:bg-${$colorScheme}-700`' : 'bg-gray-300 text-gray-500 cursor-not-allowed'">
                         Avanti
                     </button>
                     <button v-if="step === 3" @click="saveTrip"

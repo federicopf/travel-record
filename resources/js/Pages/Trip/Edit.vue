@@ -136,7 +136,7 @@ const submit = () => {
 <template>
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold text-pink-600 mb-6">Modifica Viaggio</h1>
+            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6`">Modifica Viaggio</h1>
 
             <div class="flex my-4">
                 <Link :href="route('trip.show', trip.id)"
@@ -148,15 +148,15 @@ const submit = () => {
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <label class="block mb-2 text-gray-700">Destinazione</label>
                 <input v-model="form.title" type="text"
-                    class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
 
                 <label class="block mb-2 text-gray-700">Data di Inizio</label>
                 <input v-model="form.start_date" type="date"
-                    class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
 
                 <label class="block mb-2 text-gray-700">Data di Fine</label>
                 <input v-model="form.end_date" type="date"
-                    class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
 
                 <h2 class="text-xl font-bold text-gray-700 mt-6">Luoghi visitati</h2>
                 <ul class="mt-4">
@@ -168,7 +168,7 @@ const submit = () => {
                             class="hidden">
 
                         <button @click="triggerFileInput(placeIndex)"
-                            class="mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition flex items-center gap-2">
+                            :class="`mt-2 px-4 py-2 bg-${$colorScheme}-600 text-white rounded-lg hover:bg-${$colorScheme}-700 transition flex items-center gap-2`">
                             Aggiungi Immagini
                         </button>
 
@@ -206,7 +206,7 @@ const submit = () => {
 
                 <div class="flex justify-between mt-6">
                     <button @click="submit"
-                        class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition">
+                        :class="`px-4 py-2 bg-${$colorScheme}-600 text-white rounded hover:bg-${$colorScheme}-700 transition`">
                         Salva Modifiche
                     </button>
                 </div>

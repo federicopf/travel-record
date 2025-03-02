@@ -54,7 +54,7 @@ const changeTheme = () => {
 </script>
 
 <template>
-    <header class="bg-gradient-to-r from-pink-400 to-pink-600 text-white shadow-md">
+    <header :class="`bg-gradient-to-r from-${$colorScheme}-400 to-${$colorScheme}-600 text-white shadow-md`">
         <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
             <nav class="hidden md:flex items-center space-x-8">
                 <Link :href="route('home')" class="text-lg font-semibold hover:text-gray-200 transition">
@@ -96,7 +96,7 @@ const changeTheme = () => {
             </div>
         </div>
 
-        <div v-if="isMobileMenuOpen" class="md:hidden bg-pink-500 py-4">
+        <div v-if="isMobileMenuOpen" :class="`md:hidden bg-${$colorScheme}-500 py-4`">
             <nav class="flex flex-col space-y-2 px-6">
                 <Link :href="route('home')" class="text-white text-lg font-semibold hover:text-gray-300">
                     Home

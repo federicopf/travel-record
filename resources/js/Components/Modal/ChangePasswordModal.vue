@@ -89,7 +89,7 @@ defineExpose({ openModal });
 
                 <div class="flex justify-between">
                     <button type="button" @click="closeModal" class="bg-gray-300 px-4 py-2 rounded">Annulla</button>
-                    <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded">Aggiorna</button>
+                    <button type="submit" :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded`">Aggiorna</button>
                 </div>
             </form>
         </div>

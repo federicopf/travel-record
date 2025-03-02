@@ -16,8 +16,8 @@
 
         <div class="container mx-auto px-4 py-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-                <h1 class="text-3xl font-bold text-pink-600 mb-4 md:mb-0">I nostri viaggi insieme</h1>
-                <Link :href="route('new-trip')" class="bg-pink-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-pink-700 transition">
+                <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-4 md:mb-0`">I nostri viaggi insieme</h1>
+                <Link :href="route('new-trip')" :class="`bg-${$colorScheme}-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-${$colorScheme}-700 transition`">
                     + Aggiungi viaggio
                 </Link>
             </div>
@@ -31,9 +31,9 @@
                         Nessuna immagine per questo viaggio! Male...
                     </p>
 
-                    <div class="p-4 bg-pink-50">
-                        <h2 class="text-xl font-semibold text-pink-700">{{ trip.title }}</h2>
-                        <p class="text-sm text-pink-500 italic">{{ trip.start_date }} - {{ trip.end_date }}</p>
+                    <div :class="`p-4 bg-${$colorScheme}-50`">
+                        <h2 :class="`text-xl font-semibold text-${$colorScheme}-700`">{{ trip.title }}</h2>
+                        <p :class="`text-sm text-${$colorScheme}-500 italic`">{{ trip.start_date }} - {{ trip.end_date }}</p>
                     </div>
                 </Link>
             </div>

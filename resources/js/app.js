@@ -15,7 +15,11 @@ createInertiaApp({
         const isAuthPage = computed(() => props.initialPage.component.startsWith('Auth/'));
 
         if (!isAuthPage.value) {
-            app.config.globalProperties.$colorScheme = computed(() => props.initialPage.props.auth?.user?.color_scheme || 'blue');
+            const colorSchemeComputed = computed(() => 
+                props.initialPage.props.auth?.user?.color_scheme || 'blue'
+            );
+            
+            app.config.globalProperties.$colorScheme = colorSchemeComputed.value;
         }
 
         app.use(plugin)

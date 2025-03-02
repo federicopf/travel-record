@@ -99,7 +99,7 @@ const setFavorite = () => {
     <div>
         <!-- Selezione del posto -->
         <label class="block mb-2 text-gray-700">Seleziona un posto</label>
-        <select v-model="selectedPlace" class="w-full p-2 border rounded focus:ring-2 focus:ring-pink-300">
+        <select v-model="selectedPlace" :class="`w-full p-2 border rounded focus:ring-2 focus:ring-${$colorScheme}-300`">
             <option v-for="place in modelValue.places" :key="place.name" :value="place.name">
                 {{ place.name }}
             </option>
@@ -111,7 +111,7 @@ const setFavorite = () => {
         <!-- Caricamento immagini -->
         <label class="block mt-4 mb-2 text-gray-700">Carica immagini (max 10 per posto)</label>
         <input ref="fileInput" type="file" multiple accept="image/*" @change="handleFileUpload"
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-pink-300">
+            :class="`w-full p-2 border rounded focus:ring-2 focus:ring-${$colorScheme}-300`">
 
         <div v-if="selectedPlaceData && selectedPlaceData.photos.length > 0" class="mt-6 text-center">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Anteprima immagini</h3>

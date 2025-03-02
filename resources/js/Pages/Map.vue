@@ -123,7 +123,7 @@ onMounted(() => {
 <template>
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold text-pink-600 mb-6 text-center">Mappa dei nostri viaggi</h1>
+            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6 text-center`">Mappa dei nostri viaggi</h1>
 
             <div ref="map" class="w-full h-[500px] rounded-lg shadow"></div>
         </div>
