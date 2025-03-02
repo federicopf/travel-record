@@ -1,11 +1,21 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
-import ChangePasswordModal from '@/Components/ChangePasswordModal.vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import ChangePasswordModal from '@/Components/Modal/ChangePasswordModal.vue';
 
 const isMobileMenuOpen = ref(false);
 const isOptionsOpen = ref(false);
 const changePasswordModal = ref(null);
+
+const page = usePage();
+const selectedTheme = ref(page.props.auth.user.theme_id || 1); // Default al primo tema
+
+const themes = [
+    { id: 0, name: 'Avventura' },
+    { id: 1, name: 'Paradiso' },
+    { id: 2, name: 'Foresta' },
+    { id: 3, name: 'Tramonto' }
+];
 
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -31,6 +41,16 @@ const logout = () => {
 const openPasswordModal = () => {
     changePasswordModal.value.openModal();
 };
+
+// Cambia il tema e aggiorna la pagina
+const changeTheme = () => {
+    router.post(route('theme.change'), { theme_id: selectedTheme.value }, {
+        preserveState: true,
+        onSuccess: () => {
+            window.location.reload(); // Ricarica la pagina per applicare il nuovo tema
+        }
+    });
+};
 </script>
 
 <template>
@@ -51,6 +71,16 @@ const openPasswordModal = () => {
                         Opzioni
                     </button>
                     <div v-if="isOptionsOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50">
+                        <div class="px-4 py-2">
+                            <label for="themeSelect" class="block text-sm font-medium text-gray-700">Tema:</label>
+                            <select id="themeSelect" v-model="selectedTheme" @change="changeTheme" @click.stop
+                                class="block w-full mt-1 p-2 border border-gray-300 rounded-lg">
+                                <option v-for="theme in themes" :key="theme.id" :value="theme.id">
+                                    {{ theme.name }}
+                                </option>
+                            </select>
+
+                        </div>
                         <button @click="openPasswordModal" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                             Cambia Password
                         </button>
