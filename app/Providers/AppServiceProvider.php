@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\MapPointer;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
                     ] : null
                 ];
             },
-            'mapPointers' => MapPointer::all(), 
+            'mapPointers' => Schema::hasTable('map_pointers') ? MapPointer::all() : [],
         ]);
     }
 }
