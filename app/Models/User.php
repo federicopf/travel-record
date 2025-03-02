@@ -23,7 +23,8 @@ class User extends Authenticatable
         'password',
         'username',
         'email_verified_at',
-        'theme_id'
+        'theme_id',
+        'map_pointer_id'
     ];
 
     /**
@@ -53,5 +54,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Theme::class);
     }
+
+    public function mapPointer()
+    {
+        return $this->belongsTo(MapPointer::class, 'map_pointer_id');
+    }
+
 
 }

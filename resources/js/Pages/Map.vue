@@ -13,6 +13,11 @@ const mapInstance = ref(null);
 const markers = ref([]);
 const infoWindow = ref(null);
 
+// Computed property per l'icona del Map Pointer dell'utente
+const userPointerUrl = computed(() => {
+    return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
+});
+
 // Computed property per il titolo dinamico
 const mapTitle = computed(() => {
     return user?.type === 'couple' ? 'Mappa dei nostri viaggi' : 'Mappa dei miei viaggi';
@@ -52,6 +57,7 @@ const initializeMap = async () => {
 const addMarkers = (google) => {
     if (!mapInstance.value) return;
 
+    // Rimuoviamo i marker precedenti
     markers.value.forEach(marker => marker.setMap(null));
     markers.value = [];
 
@@ -60,7 +66,7 @@ const addMarkers = (google) => {
             position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
             map: mapInstance.value,
             icon: {
-                url: 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png',
+                url: userPointerUrl.value, // Usa il Map Pointer dell'utente
                 scaledSize: new google.maps.Size(40, 40),
                 anchor: new google.maps.Point(20, 40)
             },

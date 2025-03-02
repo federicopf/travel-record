@@ -22,4 +22,18 @@ class ThemeController extends Controller
 
         return back();
     }
+    
+    public function changeMapPointer(Request $request)
+    {
+        $request->validate([
+            'map_pointer_id' => 'required|exists:map_pointers,id',
+        ]);
+
+        $user = Auth::user();
+        $user->map_pointer_id = $request->map_pointer_id;
+        $user->save();
+
+        return back()->with('success', 'Map Pointer aggiornato con successo!');
+    }
+
 }

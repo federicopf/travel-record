@@ -86,10 +86,15 @@ const saveTrip = () => {
                         Indietro
                     </button>
                     <button v-if="step < 3" @click="nextStep" :disabled="!canProceed"
-                        class="px-4 py-2 rounded transition"
-                        :class="canProceed ? '`bg-${$colorScheme}-600 text-white hover:bg-${$colorScheme}-700`' : 'bg-gray-300 text-gray-500 cursor-not-allowed'">
+                        :class="[
+                            'px-4 py-2 rounded transition',
+                            canProceed 
+                                ? `bg-${$colorScheme}-600 text-white hover:bg-${$colorScheme}-700`
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ]">
                         Avanti
                     </button>
+
                     <button v-if="step === 3" @click="saveTrip"
                         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
                         Salva Viaggio

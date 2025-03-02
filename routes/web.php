@@ -28,6 +28,7 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 
     Route::post('/change-theme', [ThemeController::class, 'change'])->name('theme.change');
+    Route::post('/change-map-pointer', [ThemeController::class, 'changeMapPointer'])->name('map-pointer.change');
 
     Route::get('/map', [MapController::class, 'index'])->name('map');
 });

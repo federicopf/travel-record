@@ -56,6 +56,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
+            'map_pointer_id' => 0,
             'theme_id' => 1,
             'password' => Hash::make($request->password),
         ]);
