@@ -13,10 +13,10 @@ class ThemeSeeder extends Seeder
     public function run(): void
     {
         DB::table('themes')->insert([
-            ['name' => 'Romantico', 'description' => 'Un tema elegante e delicato', 'color_scheme' => 'pink'],
-            ['name' => 'Fire', 'description' => 'Un tema acceso e vibrante', 'color_scheme' => 'red'],
-            ['name' => 'Nature', 'description' => 'Un tema fresco e rilassante', 'color_scheme' => 'green'],
-            ['name' => 'Sea', 'description' => 'Un tema calmo e profondo', 'color_scheme' => 'blue'],
+            ['id' => 0, 'name' => 'Avventura', 'description' => 'Esplora il mondo con energia e passione', 'color_scheme' => 'red'],
+            ['id' => 1, 'name' => 'Paradiso', 'description' => 'Spiagge dorate e mari cristallini', 'color_scheme' => 'blue'],
+            ['id' => 2, 'name' => 'Foresta', 'description' => 'Immergiti nella natura più selvaggia', 'color_scheme' => 'green'],
+            ['id' => 3, 'name' => 'Tramonto', 'description' => 'Atmosfere rilassanti e romantiche', 'color_scheme' => 'pink'],
         ]);
     }
 }

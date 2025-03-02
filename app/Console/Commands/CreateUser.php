@@ -43,6 +43,7 @@ class CreateUser extends Command
             'email' => $email,
             'username' => $username,
             'password' => Hash::make($password),
+            'theme_id' => 1,
             'email_verified_at' => Carbon::now(), 
         ]);
 

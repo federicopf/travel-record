@@ -14,7 +14,7 @@ class AuthController extends Controller
     // Mostra la pagina di login
     public function showLogin()
     {
-        return Inertia::render('Login');
+        return Inertia::render('Auth/Login');
     }
 
     // Gestisce il login con username e password
@@ -39,7 +39,7 @@ class AuthController extends Controller
     // Mostra la pagina di registrazione
     public function showRegister()
     {
-        return Inertia::render('Register');
+        return Inertia::render('Auth/Register');
     }
 
     // Gestisce la registrazione di un nuovo utente
@@ -56,6 +56,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
+            'theme_id' => 1,
             'password' => Hash::make($request->password),
         ]);
 

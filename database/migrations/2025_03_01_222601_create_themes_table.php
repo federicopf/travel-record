@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('themes', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary(); 
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('color_scheme')->nullable();
@@ -16,7 +16,8 @@ return new class extends Migration {
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('theme_id')->nullable()->constrained('themes')->nullOnDelete();
+            $table->unsignedBigInteger('theme_id'); 
+            $table->foreign('theme_id')->references('id')->on('themes')->cascadeOnDelete();
         });
     }
 
