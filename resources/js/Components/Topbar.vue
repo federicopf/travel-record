@@ -12,9 +12,9 @@ const selectedTheme = ref(-1);
 
 const themes = [
     { id: 0, name: 'Avventura' },
-    { id: 1, name: 'Paradiso' },
+    { id: 1, name: 'Oceano' },
     { id: 2, name: 'Foresta' },
-    { id: 3, name: 'Tramonto' }
+    { id: 3, name: 'Chill' }
 ];
 
 const toggleMobileMenu = () => {

@@ -14,9 +14,9 @@ class ThemeSeeder extends Seeder
     {
         DB::table('themes')->insert([
             ['id' => 0, 'name' => 'Avventura', 'description' => 'Esplora il mondo con energia e passione', 'color_scheme' => 'red'],
-            ['id' => 1, 'name' => 'Paradiso', 'description' => 'Spiagge dorate e mari cristallini', 'color_scheme' => 'blue'],
+            ['id' => 1, 'name' => 'Oceano', 'description' => 'Spiagge dorate e mari cristallini', 'color_scheme' => 'blue'],
             ['id' => 2, 'name' => 'Foresta', 'description' => 'Immergiti nella natura più selvaggia', 'color_scheme' => 'green'],
-            ['id' => 3, 'name' => 'Tramonto', 'description' => 'Atmosfere rilassanti e romantiche', 'color_scheme' => 'pink'],
+            ['id' => 3, 'name' => 'Chill', 'description' => 'Atmosfere rilassanti e romantiche', 'color_scheme' => 'pink'],
         ]);
     }
 }
