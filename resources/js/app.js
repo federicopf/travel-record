@@ -1,7 +1,7 @@
-import { createApp, h } from 'vue';
+import { createApp, h, computed } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
-import { ZiggyVue } from 'ziggy-js'; // Importa Ziggy
-import { Ziggy } from './ziggy'; // Importa il file generato da Ziggy
+import { ZiggyVue } from 'ziggy-js';
+import { Ziggy } from './ziggy';
 import '../css/app.css';
 
 createInertiaApp({
@@ -10,15 +10,26 @@ createInertiaApp({
         return pages[`./Pages/${name}.vue`];
     },
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(ZiggyVue, Ziggy) 
-            .mount(el);
+        const app = createApp({ render: () => h(App, props) });
+
+        const isAuthPage = computed(() => props.initialPage.component.startsWith('Auth/'));
+
+        if (!isAuthPage.value) {
+            app.config.globalProperties.$colorScheme = computed(() => props.initialPage.props.auth?.user?.color_scheme || 'blue');
+        }
+
+        app.use(plugin)
+           .use(ZiggyVue, Ziggy)
+           .mount(el);
+
+        loadGoogleMapsScript();
     },
 });
 
 const loadGoogleMapsScript = () => {
-    if (!window.google && (window.location.pathname.includes('/new-trip'))) { 
+    const currentPath = window.location.pathname;
+
+    if (currentPath.includes('/new-trip') && !window.google) {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
         script.async = true;
@@ -26,5 +37,3 @@ const loadGoogleMapsScript = () => {
         document.head.appendChild(script);
     }
 };
-
-loadGoogleMapsScript();
