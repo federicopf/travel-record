@@ -8,7 +8,7 @@ const isOptionsOpen = ref(false);
 const changePasswordModal = ref(null);
 
 const page = usePage();
-const selectedTheme = ref(page.props.auth.user.theme_id || 1); // Default al primo tema
+const selectedTheme = ref(-1); 
 
 const themes = [
     { id: 0, name: 'Avventura' },
@@ -75,11 +75,11 @@ const changeTheme = () => {
                             <label for="themeSelect" class="block text-sm font-medium text-gray-700">Tema:</label>
                             <select id="themeSelect" v-model="selectedTheme" @change="changeTheme" @click.stop
                                 class="block w-full mt-1 p-2 border border-gray-300 rounded-lg">
+                                <option value="-1" disabled>Cambia tema...</option> 
                                 <option v-for="theme in themes" :key="theme.id" :value="theme.id">
                                     {{ theme.name }}
                                 </option>
                             </select>
-
                         </div>
                         <button @click="openPasswordModal" class="block w-full text-left px-4 py-2 hover:bg-gray-100">
                             Cambia Password

@@ -29,9 +29,9 @@ const togglePasswordVisibility = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-pink-400 to-pink-600">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-blue-600">
       <div class="bg-white p-8 rounded-2xl shadow-xl w-96">
-          <h1 class="text-3xl font-bold text-center text-pink-600 mb-2">Accedi</h1>
+          <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">Accedi</h1>
           <p class="text-gray-500 text-center mb-6">Inserisci le tue credenziali</p>
 
           <form @submit.prevent="submitForm">
@@ -40,7 +40,7 @@ const togglePasswordVisibility = () => {
                       type="text"
                       v-model="username"
                       placeholder="Username"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                       required
                   />
               </div>
@@ -51,7 +51,7 @@ const togglePasswordVisibility = () => {
                       :type="showPassword ? 'text' : 'password'"
                       v-model="password"
                       placeholder="Password"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400 pr-10"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10"
                       required
                   />
                   <button type="button" @click="togglePasswordVisibility"
@@ -63,7 +63,7 @@ const togglePasswordVisibility = () => {
 
               <button
                   type="submit"
-                  class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition duration-300"
+                  class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
               >
                   Accedi
               </button>
@@ -73,7 +73,7 @@ const togglePasswordVisibility = () => {
               <!-- Link alla Registrazione -->
               <p class="text-gray-500 text-sm text-center mt-4">
                   Non hai un account? 
-                  <a :href="route('register')" class="text-pink-600 font-semibold hover:underline">Registrati</a>
+                  <a :href="route('register')" class="text-blue-600 font-semibold hover:underline">Registrati</a>
               </p>
           </form>
       </div>
