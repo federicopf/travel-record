@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 
 const props = defineProps(['modelValue']);
@@ -48,6 +48,12 @@ const initAutocomplete = (google) => {
     }
 };
 
+// Funzione per rimuovere un posto dall'elenco
+const removePlace = (index) => {
+    const updatedPlaces = props.modelValue.places.filter((_, i) => i !== index);
+    emit('update:modelValue', { ...props.modelValue, places: updatedPlaces });
+};
+
 onMounted(() => {
     loadGoogleMaps();
 });
@@ -63,8 +69,11 @@ onMounted(() => {
         </div>
 
         <ul class="mt-4">
-            <li v-for="(place, index) in modelValue.places" :key="index" class="p-2 border-b text-gray-700">
-                <strong>{{ place.name }}</strong> ({{ place.lat }}, {{ place.lng }})
+            <li v-for="(place, index) in modelValue.places" :key="index" class="p-2 border-b flex justify-between items-center">
+                <span>
+                    <strong>{{ place.name }}</strong> ({{ place.lat }}, {{ place.lng }})
+                </span>
+                <button @click="removePlace(index)" class="text-red-500 hover:text-red-700 text-sm">Rimuovi</button>
             </li>
         </ul>
     </div>
