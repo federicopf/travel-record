@@ -19,10 +19,10 @@ class TripController extends Controller
     {
         $trips = Trip::with(['places.photos'])
             ->where('user_id', Auth::id())
+            ->orderBy('start_date', 'desc') 
             ->get();
 
-
-            $trips = $trips->map(function ($trip) {
+        $trips = $trips->map(function ($trip) {
             return [
                 'id' => $trip->id,
                 'title' => $trip->title,
@@ -36,7 +36,7 @@ class TripController extends Controller
             'trips' => $trips,
         ]);
     }
-    
+
     public function create()
     {
         return Inertia::render('NewTrip');
@@ -264,7 +264,6 @@ class TripController extends Controller
         return Redirect::route('home')->with('success', 'Viaggio eliminato con successo.');
     }
 
- 
     private function authorizeTrip(int $tripId)
     {
         $trip = Trip::find($tripId);
