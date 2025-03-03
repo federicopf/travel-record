@@ -17,10 +17,10 @@ const selectedTheme = ref(user?.theme_id ?? -1);
 
 // Temi disponibili
 const themes = [
-    { id: 0, name: 'Avventura' },
-    { id: 1, name: 'Oceano' },
-    { id: 2, name: 'Foresta' },
-    { id: 3, name: 'Chill' }
+    { id: 0, name: 'Rosso' },
+    { id: 1, name: 'Blu' },
+    { id: 2, name: 'Verde' },
+    { id: 3, name: 'Rosa' }
 ];
 
 // Aprire e chiudere il menu
