@@ -32,6 +32,7 @@ const fileInputs = ref({});
 
 // Gestisce il caricamento delle immagini
 const handleFileUpload = (event, placeIndex) => {
+    console.log(placeIndex);
     const files = Array.from(event.target.files);
 
     if (!form.newPhotos[placeIndex]) {
@@ -44,6 +45,7 @@ const handleFileUpload = (event, placeIndex) => {
             form.newPhotos[placeIndex].push({ 
                 file, 
                 preview: e.target.result, 
+                isVideo: file.type.startsWith("video"), 
                 is_favorite: false 
             });
         };
@@ -55,6 +57,8 @@ const handleFileUpload = (event, placeIndex) => {
     }
 };
 
+
+
 // Rimuove un’immagine esistente o nuova
 const removePhoto = (placeIndex, photoIndex, isNew = false) => {
     if (isNew) {
@@ -65,8 +69,12 @@ const removePhoto = (placeIndex, photoIndex, isNew = false) => {
     }
 };
 
-// Imposta un’immagine come preferita
 const setFavorite = (photo, isNew) => {
+    if (photo.path.match(/\.(mp4|mov|avi)$/i)) {
+        alert("Non puoi selezionare un video come immagine preferita.");
+        return;
+    }
+
     form.favorite_photo = isNew ? photo.file.name : photo.path;
 
     form.places.forEach(place => {
@@ -79,7 +87,6 @@ const setFavorite = (photo, isNew) => {
 
     photo.is_favorite = true;
 };
-
 
 const triggerFileInput = (placeIndex) => {
     if (fileInputs.value[placeIndex]) {
@@ -163,7 +170,7 @@ const submit = () => {
                     <li v-for="(place, placeIndex) in form.places" :key="place.id" class="bg-gray-100 p-4 rounded-lg mb-2">
                         <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
 
-                        <input ref="fileInputs" type="file" multiple accept="image/*" 
+                        <input ref="fileInputs" type="file" multiple accept="image/*, video/*" 
                             @change="handleFileUpload($event, placeIndex)"
                             class="hidden">
 
@@ -174,13 +181,22 @@ const submit = () => {
 
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
                             <div v-for="(photo, photoIndex) in place.photos" :key="photo.id" class="relative">
-                                <img :src="photo.path" class="w-full h-40 object-cover rounded-lg">
+                                <!-- Mostra immagine -->
+                                <img v-if="!photo.path.match(/\.(mp4|mov|avi)$/i)" :src="photo.path" class="w-full h-40 object-cover rounded-lg">
+                                
+                                <!-- Mostra video -->
+                                <video v-else controls class="w-full h-40 rounded-lg shadow">
+                                    <source :src="photo.path" type="video/mp4">
+                                    Il tuo browser non supporta il tag video.
+                                </video>
 
-                                <button @click="setFavorite(photo, false)"
+                                <!-- Bottone per impostare immagine preferita (solo immagini) -->
+                                <button v-if="!photo.path.match(/\.(mp4|mov|avi)$/i)" @click="setFavorite(photo, false)"
                                     class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
                                     <StarIcon :class="photo.is_favorite ? 'text-yellow-500' : 'text-gray-400'" class="w-6 h-6" />
                                 </button>
 
+                                <!-- Bottone per rimuovere immagine o video -->
                                 <button @click="removePhoto(placeIndex, photoIndex, false)"
                                     class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
                                     <XMarkIcon class="w-5 h-5" />
@@ -188,19 +204,30 @@ const submit = () => {
                             </div>
 
                             <div v-for="(newPhoto, newIndex) in form.newPhotos[placeIndex]" :key="newIndex" class="relative">
-                                <img :src="newPhoto.preview" class="w-full h-40 object-cover rounded-lg">
+                                <!-- Mostra immagine caricata -->
+                                <img v-if="!newPhoto.file.type.startsWith('video')" :src="newPhoto.preview" class="w-full h-40 object-cover rounded-lg">
 
-                                <button @click="setFavorite(newPhoto, true)"
-                                    class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
+                                <!-- Mostra video caricato -->
+                                <video v-else controls class="w-full h-40 rounded-lg shadow">
+                                    <source :src="newPhoto.preview" type="video/mp4">
+                                    Il tuo browser non supporta il tag video.
+                                </video>
+
+                                <!-- Bottone per impostare immagine preferita (solo immagini) -->
+                                <button v-if="!newPhoto.file.type.startsWith('video')" 
+                                        @click="setFavorite(newPhoto, true)"
+                                        class="absolute top-2 left-2 bg-white p-1 rounded-full shadow">
                                     <StarIcon :class="newPhoto.is_favorite ? 'text-yellow-500' : 'text-gray-400'" class="w-6 h-6" />
                                 </button>
 
+                                <!-- Bottone per rimuovere immagine o video -->
                                 <button @click="removePhoto(placeIndex, newIndex, true)"
-                                    class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
+                                        class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow">
                                     <XMarkIcon class="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
+
                     </li>
                 </ul>
 

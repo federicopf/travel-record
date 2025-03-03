@@ -116,12 +116,10 @@ const setFavorite = () => {
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Anteprima file</h3>
 
             <div class="relative w-full max-w-md mx-auto bg-gray-200 rounded-lg overflow-hidden shadow-lg">
-                <!-- ✅ Mostra immagine se è un'immagine -->
                 <img v-if="selectedPlaceData.photos[currentPhotoIndex].type === 'image'"
                     :src="selectedPlaceData.photos[currentPhotoIndex].preview" alt="Anteprima"
                     class="w-full h-64 object-cover">
 
-                <!-- ✅ Mostra video se è un video -->
                 <video v-else controls class="w-full h-64">
                     <source :src="selectedPlaceData.photos[currentPhotoIndex].preview" type="video/mp4">
                     Il tuo browser non supporta il tag video.
@@ -135,7 +133,6 @@ const setFavorite = () => {
                     <ChevronRightIcon class="w-6 h-6" />
                 </button>
 
-                <!-- ✅ Stella preferita (solo per immagini) -->
                 <button v-if="selectedPlaceData.photos[currentPhotoIndex].type === 'image'" @click="setFavorite"
                     class="absolute top-2 left-2 p-2 rounded-full transition"
                     :class="selectedPlaceData.photos[currentPhotoIndex].is_favorite ? 'text-black' : 'text-gray-400'">
