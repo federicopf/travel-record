@@ -50,21 +50,32 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'type' => 'required|string|in:individual,couple',
+            'partner_name' => 'nullable|string|max:255|required_if:type,couple',
         ]);
 
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
             'map_pointer_id' => 0,
             'theme_id' => 1,
             'password' => Hash::make($request->password),
-        ]);
+            'type' => $request->type,
+        ];
+
+        // Se il tipo è "couple", aggiungiamo il nome del partner
+        if ($request->type === 'couple') {
+            $userData['partner_name'] = $request->partner_name;
+        }
+
+        $user = User::create($userData);
 
         Auth::login($user);
 
         return redirect()->route('home')->with('success', 'Registrazione completata con successo!');
     }
+
 
     // Logout e distruzione sessione
     public function logout(Request $request)
