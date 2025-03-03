@@ -67,7 +67,8 @@ const changeTheme = () => {
                     <button @click.stop="toggleOptionsMenu" class="text-white text-lg font-bold focus:outline-none">
                         Opzioni
                     </button>
-                    <div v-if="isOptionsOpen" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50">
+                    <div v-if="isOptionsOpen" 
+                         class="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50">
                         <!-- Cambia tema -->
                         <div class="px-4 py-2">
                             <label for="themeSelect" class="block text-sm font-medium text-gray-700">Tema:</label>
