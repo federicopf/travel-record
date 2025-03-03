@@ -1,34 +1,55 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { Loader } from '@googlemaps/js-api-loader';
 
 const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
 
 const newPlace = ref('');
 const placeInput = ref(null);
+let autocomplete = null;
 
-onMounted(() => {
-    if (window.google) {
-        const autocomplete = new window.google.maps.places.Autocomplete(placeInput.value, {
-            types: ['geocode'], 
+const loadGoogleMaps = async () => {
+    try {
+        const loader = new Loader({
+            apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+            version: 'weekly',
+            libraries: ['places']
+        });
+
+        const google = await loader.load();
+        initAutocomplete(google);
+    } catch (error) {
+        console.error("Errore nel caricamento di Google Maps:", error);
+    }
+};
+
+const initAutocomplete = (google) => {
+    if (placeInput.value) {
+        autocomplete = new google.maps.places.Autocomplete(placeInput.value, {
+            types: ['geocode']
         });
 
         autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
             if (place.geometry) {
-                props.modelValue.places.push({
+                const updatedPlaces = [...props.modelValue.places, {
                     name: place.name,
                     address: place.formatted_address,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
                     photos: []
-                });
+                }];
 
-                emit('update:modelValue', props.modelValue);
+                emit('update:modelValue', { ...props.modelValue, places: updatedPlaces });
                 newPlace.value = ''; // Resetta l'input
             }
         });
     }
+};
+
+onMounted(() => {
+    loadGoogleMaps();
 });
 </script>
 
