@@ -36,7 +36,7 @@ defineExpose({ openModal });
 <template>
     <div v-if="isOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div :class="`bg-gray-50 p-6 rounded-lg shadow-lg w-96`">
-            <h2 :class="`text-lg font-semibold mb-4 text-${$colorScheme}-700`">Seleziona un nuovo Map Pointer</h2>
+            <h2 :class="`text-lg font-semibold mb-4 text-${$colorScheme}-700`">Seleziona un nuovo segnaposto</h2>
 
             <!-- Griglia dei Map Pointers -->
             <div class="grid grid-cols-3 gap-4">

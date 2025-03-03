@@ -33,7 +33,7 @@ class ThemeController extends Controller
         $user->map_pointer_id = $request->map_pointer_id;
         $user->save();
 
-        return back()->with('success', 'Map Pointer aggiornato con successo!');
+        return back()->with('success', 'Segnaposto aggiornato con successo!');
     }
 
 }
