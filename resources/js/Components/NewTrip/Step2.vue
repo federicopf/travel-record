@@ -27,7 +27,7 @@ const loadGoogleMaps = async () => {
 const initAutocomplete = (google) => {
     if (placeInput.value) {
         autocomplete = new google.maps.places.Autocomplete(placeInput.value, {
-            types: ['establishment']
+            types: []
         });
 
         autocomplete.addListener('place_changed', () => {

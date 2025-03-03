@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 
 // Importa Swiper per il carosello
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -20,6 +20,9 @@ const mapInstance = ref(null);
 const showFullscreen = ref(false);
 const fullscreenImages = ref([]);
 const currentIndex = ref(0);
+
+// Form per eliminare il viaggio
+const form = useForm({});
 
 // Apri il carosello fullscreen con tutte le immagini di un luogo
 const openFullscreenCarousel = (images, index) => {
@@ -58,7 +61,6 @@ const initializeMap = async () => {
                 position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
                 map: mapInstance.value,
                 icon: {
-                    //FIXME ICONA PORTALA INTERNA
                     url: 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png',
                     scaledSize: new google.maps.Size(40, 40),
                     anchor: new google.maps.Point(20, 40)
@@ -69,6 +71,13 @@ const initializeMap = async () => {
 
     } catch (error) {
         console.error("Errore durante il caricamento della mappa:", error);
+    }
+};
+
+// Funzione per eliminare il viaggio
+const deleteTrip = () => {
+    if (confirm("Sei sicuro di voler eliminare questo viaggio? L'operazione non può essere annullata.")) {
+        form.delete(route('trip.destroy', props.trip.id));
     }
 };
 
@@ -128,6 +137,15 @@ onMounted(() => {
                     </div>
                 </li>
             </ul>
+
+            <!-- Bottone per eliminare il viaggio -->
+            <div class="mt-10 flex justify-center">
+                <button 
+                    @click="deleteTrip"
+                    class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                    Elimina Viaggio
+                </button>
+            </div>
         </div>
 
         <!-- Modal per Carosello Fullscreen -->

@@ -236,6 +236,34 @@ class TripController extends Controller
     
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
+
+    public function destroy(Trip $trip)
+    {
+        // Controlla se l'utente ha il permesso di eliminare il viaggio
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home')->with('error', 'Non sei autorizzato a eliminare questo viaggio.');
+        }
+
+        // Elimina tutte le foto associate ai luoghi del viaggio
+        foreach ($trip->places as $place) {
+            foreach ($place->photos as $photo) {
+                Storage::disk('public')->delete($photo->path);
+                $photo->delete();
+            }
+            $place->delete();
+        }
+
+        // Elimina l'immagine principale del viaggio (se presente)
+        if ($trip->image) {
+            Storage::disk('public')->delete($trip->image);
+        }
+
+        // Elimina il viaggio
+        $trip->delete();
+
+        return Redirect::route('home')->with('success', 'Viaggio eliminato con successo.');
+    }
+
  
     private function authorizeTrip(int $tripId)
     {
