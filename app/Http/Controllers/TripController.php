@@ -52,9 +52,9 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'places.*.photos' => 'array|max:10',
-            'places.*.photos.*' => 'nullable|file|image|max:2048',
-            'favorite_photo' => 'nullable|string', 
+            'places.*.photos' => 'array|max:10', // ✅ Permettiamo fino a 10 file per posto
+            'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:51200', // ✅ Accetta immagini e video (50MB max per video)
+            'favorite_photo' => 'nullable|string',
         ]);
     
         $trip = Trip::create([
@@ -77,10 +77,11 @@ class TripController extends Controller
     
             if (!empty($placeData['photos'])) {
                 foreach ($placeData['photos'] as $photo) {
-                    $path = $photo->store("uploads/trips/{$trip->id}/{$place->id}", 'public');
-                    $photoName = $photo->getClientOriginalName(); 
+                    $extension = $photo->getClientOriginalExtension();
+                    $fileName = time() . '-' . uniqid() . '.' . $extension;
+                    $path = $photo->storeAs("uploads/trips/{$trip->id}/{$place->id}", $fileName, 'public');
     
-                    if ($favoritePhotoName && $photoName === $favoritePhotoName) {
+                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp']) && $favoritePhotoName === $photo->getClientOriginalName()) {
                         $favoriteImagePath = $path;
                     }
     
@@ -92,14 +93,21 @@ class TripController extends Controller
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
-            $firstPhoto = optional($trip->places->first()?->photos->first())->path;
-            if ($firstPhoto) {
-                $trip->update(['image' => $firstPhoto]);
+            $firstImage = optional($trip->places()
+            ->with('photos') 
+            ->get()
+            ->flatMap(fn ($place) => $place->photos)
+            ->filter(fn ($photo) => in_array(pathinfo($photo->path, PATHINFO_EXTENSION), ['jpeg', 'jpg', 'png', 'webp'])) 
+            ->first())->path;
+            
+            if ($firstImage) {
+                $trip->update(['image' => $firstImage]);
             }
         }
     
         return Redirect::route('home')->with('success', 'Viaggio aggiunto con successo!');
     }
+    
         
     public function show(Trip $trip)
     {

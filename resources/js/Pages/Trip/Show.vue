@@ -18,15 +18,15 @@ const mapInstance = ref(null);
 
 // Stato per il carosello fullscreen
 const showFullscreen = ref(false);
-const fullscreenImages = ref([]);
+const fullscreenMedia = ref([]);
 const currentIndex = ref(0);
 
 // Form per eliminare il viaggio
 const form = useForm({});
 
-// Apri il carosello fullscreen con tutte le immagini di un luogo
-const openFullscreenCarousel = (images, index) => {
-    fullscreenImages.value = images;
+// Apri il carosello fullscreen con tutte le immagini e i video di un luogo
+const openFullscreenCarousel = (media, index) => {
+    fullscreenMedia.value = media;
     currentIndex.value = index;
     showFullscreen.value = true;
 };
@@ -113,7 +113,7 @@ onMounted(() => {
                 <li v-for="place in trip.places" :key="place.id" class="bg-gray-100 p-4 rounded-lg">
                     <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
 
-                    <!-- Controllo se ci sono immagini -->
+                    <!-- Controllo se ci sono immagini/video -->
                     <div v-if="place.photos.length > 0">
                         <swiper
                             :modules="[Navigation, Pagination]"
@@ -122,18 +122,29 @@ onMounted(() => {
                             class="my-4 rounded-lg shadow-lg">
                             
                             <swiper-slide v-for="(photo, index) in place.photos" :key="photo.id">
+                                <!-- Mostra immagine se è un'immagine -->
                                 <img 
+                                    v-if="photo.path.match(/\.(jpeg|jpg|png|webp)$/i)"
                                     :src="photo.path" 
                                     class="w-full h-60 object-cover rounded-lg cursor-pointer"
                                     @click="openFullscreenCarousel(place.photos, index)"
                                 >
+
+                                <!-- Mostra video se è un video -->
+                                <video 
+                                    v-else controls 
+                                    class="w-full h-60 rounded-lg shadow cursor-pointer"
+                                    @click="openFullscreenCarousel(place.photos, index)">
+                                    <source :src="photo.path" type="video/mp4">
+                                    Il tuo browser non supporta il tag video.
+                                </video>
                             </swiper-slide>
                         </swiper>
                     </div>
 
-                    <!-- Messaggio alternativo se non ci sono immagini -->
+                    <!-- Messaggio alternativo se non ci sono media -->
                     <div v-else class="my-4 p-4 bg-red-100 text-red-700 text-center rounded-lg">
-                        Nessuna immagine per questo posto! Male...
+                        Nessun media per questo posto! Male...
                     </div>
                 </li>
             </ul>
@@ -159,8 +170,15 @@ onMounted(() => {
                 :initial-slide="currentIndex"
                 class="w-full h-full">
                 
-                <swiper-slide v-for="photo in fullscreenImages" :key="photo.id" class="flex justify-center items-center">
-                    <img :src="photo.path" class="max-w-full max-h-full object-contain">
+                <swiper-slide v-for="media in fullscreenMedia" :key="media.id" class="flex justify-center items-center">
+                    <!-- Mostra immagine -->
+                    <img v-if="media.path.match(/\.(jpeg|jpg|png|webp)$/i)" :src="media.path" class="max-w-full max-h-full object-contain">
+                    
+                    <!-- Mostra video -->
+                    <video v-else controls class="max-w-full max-h-full object-contain">
+                        <source :src="media.path" type="video/mp4">
+                        Il tuo browser non supporta il tag video.
+                    </video>
                 </swiper-slide>
             </swiper>
         </div>
