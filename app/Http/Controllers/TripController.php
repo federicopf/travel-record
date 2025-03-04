@@ -53,7 +53,7 @@ class TripController extends Controller
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
             'places.*.photos' => 'array|max:30', 
-            'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:51200',
+            'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:5120',
             'favorite_photo' => 'nullable|string',
         ]);
     
@@ -161,10 +161,10 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'places.*.photos' => 'array|max:30', // ✅ Supporta fino a 30 file tra immagini e video
+            'places.*.photos' => 'array|max:30', 
             'places.*.photos.*.id' => 'nullable|integer|exists:photos,id',
             'places.*.photos.*.path' => 'nullable|string',
-            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:51200', // ✅ Accetta immagini e video
+            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:5120',
             'deletedPhotos' => 'array',
             'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
@@ -245,7 +245,6 @@ class TripController extends Controller
 
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
-
 
     public function destroy(Trip $trip)
     {

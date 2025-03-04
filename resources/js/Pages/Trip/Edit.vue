@@ -134,7 +134,7 @@ const submit = () => {
     });
 
     router.post(route('trip.update', props.trip.id), formData, {
-        forceFormData: true, // Inertia gestisce FormData in modo automatico
+        forceFormData: true, 
     });
 };
 
