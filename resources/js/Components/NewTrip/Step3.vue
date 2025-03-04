@@ -25,8 +25,8 @@ const handleFileUpload = (event) => {
 
     const files = Array.from(event.target.files);
 
-    if (selectedPlaceData.value.photos.length + files.length > 10) {
-        alert("Puoi caricare massimo 10 file per ogni posto.");
+    if (selectedPlaceData.value.photos.length + files.length > 30) {
+        alert("Puoi caricare massimo 30 file per ogni posto.");
         return;
     }
 
@@ -108,7 +108,7 @@ const setFavorite = () => {
 
         <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
 
-        <label class="block mt-4 mb-2 text-gray-700">Carica immagini o video (max 10 per posto)</label>
+        <label class="block mt-4 mb-2 text-gray-700">Carica immagini o video (max 30 per posto)</label>
         <input ref="fileInput" type="file" multiple accept="image/*,video/*" @change="handleFileUpload"
             :class="`w-full p-2 border rounded focus:ring-2 focus:ring-${$colorScheme}-300`">
 

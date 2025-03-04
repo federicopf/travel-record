@@ -52,8 +52,8 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'places.*.photos' => 'array|max:10', // ✅ Permettiamo fino a 10 file per posto
-            'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:51200', // ✅ Accetta immagini e video (50MB max per video)
+            'places.*.photos' => 'array|max:30', 
+            'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:51200',
             'favorite_photo' => 'nullable|string',
         ]);
     
