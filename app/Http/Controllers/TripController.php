@@ -56,7 +56,7 @@ class TripController extends Controller
             'places.*.photos.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:5120',
             'favorite_photo' => 'nullable|string',
         ]);
-    
+
         $trip = Trip::create([
             'title' => $validated['title'],
             'start_date' => $validated['start_date'],
@@ -64,50 +64,60 @@ class TripController extends Controller
             'image' => null,
             'user_id' => Auth::id()
         ]);
-    
+
         $favoritePhotoName = $validated['favorite_photo'] ?? null;
         $favoriteImagePath = null;
-    
+
         foreach ($validated['places'] as $placeData) {
             $place = $trip->places()->create([
                 'name' => $placeData['name'],
                 'lat' => $placeData['lat'],
                 'lng' => $placeData['lng'],
             ]);
-    
+
             if (!empty($placeData['photos'])) {
                 foreach ($placeData['photos'] as $photo) {
                     $extension = $photo->getClientOriginalExtension();
                     $fileName = time() . '-' . uniqid() . '.' . $extension;
-                    $path = $photo->storeAs("uploads/trips/{$trip->id}/{$place->id}", $fileName, 'public');
-    
-                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp']) && $favoritePhotoName === $photo->getClientOriginalName()) {
-                        $favoriteImagePath = $path;
+                    $relativePath = "uploads/trips/{$trip->id}/{$place->id}/{$fileName}";
+                    $absolutePath = storage_path("app/public/{$relativePath}");
+
+                    // Se è un'immagine, comprimila
+                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp'])) {
+                        $this->compressImage($photo->getPathname(), $absolutePath, 75, 1920);
+                    } 
+                    // Se è un video, salvalo normalmente
+                    else if (in_array($extension, ['mp4', 'mov', 'avi'])) {
+                        $photo->storeAs("uploads/trips/{$trip->id}/{$place->id}", $fileName, 'public');
                     }
-    
-                    $place->photos()->create(['path' => $path]);
+
+                    // Seleziona l'immagine preferita se specificata
+                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp']) && $favoritePhotoName === $photo->getClientOriginalName()) {
+                        $favoriteImagePath = $relativePath;
+                    }
+
+                    $place->photos()->create(['path' => $relativePath]);
                 }
             }
         }
-    
+
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
             $firstImage = optional($trip->places()
-            ->with('photos') 
-            ->get()
-            ->flatMap(fn ($place) => $place->photos)
-            ->filter(fn ($photo) => in_array(pathinfo($photo->path, PATHINFO_EXTENSION), ['jpeg', 'jpg', 'png', 'webp'])) 
-            ->first())->path;
-            
+                ->with('photos') 
+                ->get()
+                ->flatMap(fn ($place) => $place->photos)
+                ->filter(fn ($photo) => in_array(pathinfo($photo->path, PATHINFO_EXTENSION), ['jpeg', 'jpg', 'png', 'webp']))
+                ->first())->path;
+
             if ($firstImage) {
                 $trip->update(['image' => $firstImage]);
             }
         }
-    
+
         return Redirect::route('home')->with('success', 'Viaggio aggiunto con successo!');
     }
-    
         
     public function show(Trip $trip)
     {
@@ -161,9 +171,6 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'places.*.photos' => 'array|max:30', 
-            'places.*.photos.*.id' => 'nullable|integer|exists:photos,id',
-            'places.*.photos.*.path' => 'nullable|string',
             'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:5120',
             'deletedPhotos' => 'array',
             'deletedPhotos.*' => 'integer|exists:photos,id',
@@ -176,6 +183,7 @@ class TripController extends Controller
             'end_date' => $validated['end_date'],
         ]);
 
+        // 🔥 Eliminazione delle foto selezionate
         if (!empty($validated['deletedPhotos'])) {
             $photosToDelete = Photo::whereIn('id', $validated['deletedPhotos'])->get();
             foreach ($photosToDelete as $photo) {
@@ -202,19 +210,29 @@ class TripController extends Controller
                 foreach ($validated['newPhotos'][$placeId] as $file) {
                     $extension = $file->getClientOriginalExtension();
                     $fileName = time() . '-' . uniqid() . '.' . $extension;
-                    $path = $file->storeAs("uploads/trips/{$trip->id}/{$placeId}", $fileName, 'public');
+                    $relativePath = "uploads/trips/{$trip->id}/{$placeId}/{$fileName}";
+                    $absolutePath = storage_path("app/public/{$relativePath}");
 
-                    $photo = $place->photos()->create([
-                        'path' => $path,
-                    ]);
+                    // Se è un'immagine, comprimila e ridimensionala
+                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp'])) {
+                        $this->compressImage($file->getPathname(), $absolutePath, 75, 1920);
+                    } 
+                    // Se è un video, salvalo senza modificarlo
+                    else if (in_array($extension, ['mp4', 'mov', 'avi'])) {
+                        $file->storeAs("uploads/trips/{$trip->id}/{$placeId}", $fileName, 'public');
+                    }
 
+                    $place->photos()->create(['path' => $relativePath]);
+
+                    // Se è l'immagine preferita, aggiorna il percorso
                     if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp']) && $validated['favorite_photo'] === $file->getClientOriginalName()) {
-                        $favoriteImagePath = $path;
+                        $favoriteImagePath = $relativePath;
                     }
                 }
             }
         }
 
+        // 🔥 Selezione dell'immagine preferita
         if (!$favoriteImagePath && !empty($validated['favorite_photo'])) {
             if (str_contains($validated['favorite_photo'], 'uploads/')) {
                 $validated['favorite_photo'] = 'uploads/' . explode('uploads/', $validated['favorite_photo'])[1];
@@ -227,10 +245,11 @@ class TripController extends Controller
             }
         }
 
+        // 🔹 Se c'è una foto preferita, aggiornala
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
-            // Se nessuna immagine è preferita, mettiamo la prima immagine disponibile
+            // Se nessuna immagine è preferita, usa la prima disponibile
             $firstImage = optional($trip->places()
                 ->with('photos')
                 ->get()
@@ -283,4 +302,61 @@ class TripController extends Controller
 
         return true;
     }
+
+    private function compressImage($sourcePath, $destinationPath, $quality = 75, $maxWidth = 1920)
+    {
+        // Crea la cartella di destinazione se non esiste
+        $directory = dirname($destinationPath);
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        // Ottieni il tipo di immagine
+        $info = getimagesize($sourcePath);
+        $mime = $info['mime'];
+
+        // Crea l'immagine in base al tipo
+        switch ($mime) {
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($sourcePath);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($sourcePath);
+                break;
+            case 'image/webp':
+                $image = imagecreatefromwebp($sourcePath);
+                break;
+            default:
+                return false; // Tipo di file non supportato
+        }
+
+        // Ridimensiona se è più grande della larghezza massima
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $newHeight = intval(($height / $width) * $newWidth);
+            $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+            imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            $image = $resizedImage;
+        }
+
+        // Salva l'immagine compressa
+        switch ($mime) {
+            case 'image/jpeg':
+                imagejpeg($image, $destinationPath, $quality);
+                break;
+            case 'image/png':
+                imagepng($image, $destinationPath, intval($quality / 10)); // PNG usa scala 0-9
+                break;
+            case 'image/webp':
+                imagewebp($image, $destinationPath, $quality);
+                break;
+        }
+
+        imagedestroy($image);
+        return true;
+    }
+
 }
