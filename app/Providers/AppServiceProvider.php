@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\MapPointer;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
     
     public function boot()
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https'); // ✅ Forza HTTPS su tutti i link generati
+        }
+        
         Inertia::share([
             'auth' => function () {
                 $user = Auth::user();

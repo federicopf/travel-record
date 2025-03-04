@@ -131,6 +131,12 @@
                     >
                         Avanti
                     </button>
+
+                    <!-- Link alla Registrazione -->
+                    <p class="text-gray-500 text-sm text-center mt-4">
+                        Hai già un account? 
+                        <a :href="route('login')" class="text-blue-600 font-semibold hover:underline">Login</a>
+                    </p>
                 </div>
 
                 <!-- Step 2: Credenziali -->
