@@ -26,7 +26,7 @@ class MapController extends Controller
                         'name' => $place->name,
                         'lat' => $place->lat,
                         'lng' => $place->lng,
-                        'images' => $place->photos->take(3)
+                        'images' => $place->photos->take(2)
                             ->pluck('path')    
                             ->filter(fn($path) => preg_match('/\.(png|jpe?g)$/i', $path))
                             ->map(fn($path) => "/storage/{$path}")->toArray(),
