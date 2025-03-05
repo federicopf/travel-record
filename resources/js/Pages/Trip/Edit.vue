@@ -70,13 +70,17 @@ const removePhoto = (placeIndex, photoIndex, isNew = false) => {
 };
 
 const setFavorite = (photo, isNew) => {
-    if (photo.path.match(/\.(mp4|mov|avi)$/i)) {
+    const photoPath = isNew ? photo.file.name : photo.path;
+
+    // Controlla che photoPath sia definito prima di usare match()
+    if (!photoPath || photoPath.match(/\.(mp4|mov|avi)$/i)) {
         alert("Non puoi selezionare un video come immagine preferita.");
         return;
     }
 
-    form.favorite_photo = isNew ? photo.file.name : photo.path;
+    form.favorite_photo = photoPath;
 
+    // Resetta lo stato di is_favorite per tutte le immagini
     form.places.forEach(place => {
         place.photos.forEach(p => p.is_favorite = false);
     });
@@ -85,8 +89,10 @@ const setFavorite = (photo, isNew) => {
         photoList.forEach(p => p.is_favorite = false);
     });
 
+    // Imposta l'immagine selezionata come preferita
     photo.is_favorite = true;
 };
+
 
 const triggerFileInput = (placeIndex) => {
     if (fileInputs.value[placeIndex]) {
