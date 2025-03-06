@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         if (config('app.env') === 'production') {
-            URL::forceScheme('https'); // ✅ Forza HTTPS su tutti i link generati
+            URL::forceScheme('https'); 
         }
         
         Inertia::share([

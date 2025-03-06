@@ -11,18 +11,13 @@ createInertiaApp({
     },
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) });
-            
-        app.config.globalProperties.$colorScheme = 'blue';
-
-        const isAuthPage = computed(() => props.initialPage.component.startsWith('Auth/'));
-
-        if (!isAuthPage.value) {
-            const colorSchemeComputed = computed(() => 
-                props.initialPage.props.auth?.user?.color_scheme || 'blue'
-            );
-            
-            app.config.globalProperties.$colorScheme = colorSchemeComputed.value;
-        }
+        
+        const colorSchemeComputed = computed(() => 
+            props.initialPage.props.auth?.user?.color_scheme || 'blue'
+        );
+        
+        app.config.globalProperties.$colorScheme = colorSchemeComputed.value;
+        
 
         app.use(plugin)
            .use(ZiggyVue, Ziggy)
