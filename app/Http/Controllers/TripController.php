@@ -116,7 +116,7 @@ class TripController extends Controller
             }
         }
 
-        return Redirect::route('home')->with('success', 'Viaggio aggiunto con successo!');
+        return redirect()->route('trip.show', ['trip' => $trip->id]);
     }
         
     public function show(Trip $trip)
