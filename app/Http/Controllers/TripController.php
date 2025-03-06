@@ -330,6 +330,25 @@ class TripController extends Controller
                 return false; // Tipo di file non supportato
         }
 
+        // Corregge l'orientamento dell'immagine se è un JPEG
+        if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
+            $exif = @exif_read_data($sourcePath);
+            if (!empty($exif['Orientation'])) {
+                $orientation = $exif['Orientation'];
+                switch ($orientation) {
+                    case 3: // Ruotare di 180 gradi
+                        $image = imagerotate($image, 180, 0);
+                        break;
+                    case 6: // Ruotare di 90 gradi in senso orario
+                        $image = imagerotate($image, -90, 0);
+                        break;
+                    case 8: // Ruotare di 90 gradi in senso antiorario
+                        $image = imagerotate($image, 90, 0);
+                        break;
+                }
+            }
+        }
+
         // Ridimensiona se è più grande della larghezza massima
         $width = imagesx($image);
         $height = imagesy($image);
@@ -358,5 +377,6 @@ class TripController extends Controller
         imagedestroy($image);
         return true;
     }
+
 
 }
