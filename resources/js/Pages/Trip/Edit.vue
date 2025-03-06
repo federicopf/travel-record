@@ -1,12 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
-import { XMarkIcon, StarIcon } from '@heroicons/vue/24/solid';
+import { XMarkIcon, StarIcon, ArrowPathIcon  } from '@heroicons/vue/24/solid';
 import { Link } from '@inertiajs/vue3';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
+const isSubmitting = ref(false);
 
 const form = useForm({
     title: props.trip.title || '',
@@ -30,31 +31,33 @@ const form = useForm({
 
 const fileInputs = ref({});
 
-// Gestisce il caricamento delle immagini
 // Gestisce il caricamento delle immagini con limite di 30 totali e 5 per batch
 const handleFileUpload = (event, placeIndex) => {
-    
-    const files = Array.from(event.target.files);
+        const files = Array.from(event.target.files);
 
     if (!form.newPhotos[placeIndex]) {
         form.newPhotos[placeIndex] = [];
     }
 
-    // **Calcola il numero di immagini già presenti**
-    const existingPhotosCount = form.places[placeIndex]?.photos.length || 0;
-    const newPhotosCount = form.newPhotos[placeIndex].length;
-    const totalPhotosCount = existingPhotosCount + newPhotosCount;
-
-    // **Se supera il limite di 30 immagini, blocca il caricamento**
-    if (totalPhotosCount >= 30) {
-        alert("Puoi caricare massimo 30 immagini per questo luogo.");
+    // **Se l'utente seleziona più di 5 file, blocca e mostra un alert**
+    if (files.length > 5) {
+        alert("Puoi caricare massimo 5 immagini per volta.");
         return;
     }
 
-    // **Seleziona massimo 5 nuove immagini per batch**
-    const filesToUpload = files.slice(0, Math.min(5, 30 - totalPhotosCount));
+    // **Calcola il numero di immagini già presenti**
+    const existingPhotosCount = form.places[placeIndex]?.photos.length || 0;
+    const newPhotosCount = form.newPhotos[placeIndex].length;
+    const totalPhotosCount = existingPhotosCount + newPhotosCount + files.length;
 
-    filesToUpload.forEach(file => {
+    // **Se supera il limite di 30 immagini totali, blocca il caricamento**
+    if (totalPhotosCount > 30) {
+        alert("Puoi avere massimo 30 immagini per questo luogo.");
+        return;
+    }
+
+    // **Carica le immagini selezionate (massimo 5 per volta)**
+    files.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
             form.newPhotos[placeIndex].push({ 
@@ -71,9 +74,6 @@ const handleFileUpload = (event, placeIndex) => {
         fileInputs.value[placeIndex].value = "";
     }
 };
-
-
-
 
 // Rimuove un’immagine esistente o nuova
 const removePhoto = (placeIndex, photoIndex, isNew = false) => {
@@ -117,6 +117,7 @@ const triggerFileInput = (placeIndex) => {
 };
 
 const submit = () => {
+    isSubmitting.value = true;
 
     const formData = new FormData();
 
@@ -158,6 +159,8 @@ const submit = () => {
     router.post(route('trip.update', props.trip.id), formData, {
         forceFormData: true, 
     });
+
+    isSubmitting.value = false;
 };
 
 </script>
@@ -253,12 +256,16 @@ const submit = () => {
                     </li>
                 </ul>
 
-                <div class="flex justify-between mt-6">
-                    <button @click="submit"
-                        :class="`px-4 py-2 bg-${$colorScheme}-600 text-white rounded hover:bg-${$colorScheme}-700 transition`">
-                        Salva Modifiche
-                    </button>
-                </div>
+                <button @click="submit"
+                    :class="`px-4 py-2 bg-${$colorScheme}-600 text-white rounded hover:bg-${$colorScheme}-700 transition flex items-center gap-2`"
+                    :disabled="isSubmitting">
+                    
+                    <ArrowPathIcon v-if="isSubmitting" class="h-5 w-5 animate-spin text-white" />
+                    
+                    <span v-if="isSubmitting">Salvataggio...</span>
+                    <span v-else>Salva Modifiche</span>
+                </button>
+
             </div>
         </div>
     </AppLayout>

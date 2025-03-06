@@ -171,7 +171,7 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:102400',
+            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,svg,webp,mp4,mov,avi|max:102400',
             'deletedPhotos' => 'array',
             'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
@@ -218,7 +218,7 @@ class TripController extends Controller
                         $this->compressImage($file->getPathname(), $absolutePath, 75, 1920);
                     } 
                     // Se è un video, salvalo senza modificarlo
-                    else if (in_array($extension, ['mp4', 'mov', 'avi'])) {
+                    else if (in_array($extension, ['mp4', 'mov', 'avi', 'svg'])) {
                         $file->storeAs("uploads/trips/{$trip->id}/{$placeId}", $fileName, 'public');
                     }
 
@@ -244,7 +244,6 @@ class TripController extends Controller
             }
         }
 
-        // 🔹 Se c'è una foto preferita, aggiornala
         if ($favoriteImagePath) {
             $trip->update(['image' => $favoriteImagePath]);
         } else {
