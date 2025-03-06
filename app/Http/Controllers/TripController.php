@@ -232,7 +232,6 @@ class TripController extends Controller
             }
         }
 
-        // 🔥 Selezione dell'immagine preferita
         if (!$favoriteImagePath && !empty($validated['favorite_photo'])) {
             if (str_contains($validated['favorite_photo'], 'uploads/')) {
                 $validated['favorite_photo'] = 'uploads/' . explode('uploads/', $validated['favorite_photo'])[1];

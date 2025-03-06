@@ -7,7 +7,6 @@ import { router } from '@inertiajs/vue3';
 
 import Step1 from '@/Components/NewTrip/Step1.vue';
 import Step2 from '@/Components/NewTrip/Step2.vue';
-import Step3 from '@/Components/NewTrip/Step3.vue';
 
 // Stato globale del viaggio
 const tripData = ref({
@@ -30,7 +29,7 @@ const canProceed = computed(() => {
 });
 
 const nextStep = () => {
-    if (canProceed.value && step.value < 3) {
+    if (canProceed.value && step.value < 2) {
         step.value++;
     }
 };
@@ -52,15 +51,12 @@ const saveTrip = () => {
         formData.append(`places[${index}][name]`, place.name);
         formData.append(`places[${index}][lat]`, place.lat);
         formData.append(`places[${index}][lng]`, place.lng);
-
-        place.photos.forEach((photo, pIndex) => {
-            formData.append(`places[${index}][photos][${pIndex}]`, photo.file);
-        });
     });
 
     router.post(route('new-trip.store'), formData, {
         onSuccess: () => {
             console.log("Viaggio salvato con successo!");
+            step.value++;
         },
         onError: (errors) => {
             console.log("Errore nel salvataggio:", errors);
@@ -77,15 +73,14 @@ const saveTrip = () => {
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <Step1 v-if="step === 1" v-model="tripData" />
                 <Step2 v-if="step === 2" v-model="tripData" />
-                <Step3 v-if="step === 3" v-model="tripData" />
-
+                
                 <!-- Navigazione tra gli step -->
                 <div class="flex justify-between mt-6">
                     <button v-if="step > 1" @click="prevStep"
                         class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">
                         Indietro
                     </button>
-                    <button v-if="step < 3" @click="nextStep" :disabled="!canProceed"
+                    <button v-if="step === 1" @click="nextStep" :disabled="!canProceed"
                         :class="[
                             'px-4 py-2 rounded transition',
                             canProceed 
@@ -94,8 +89,7 @@ const saveTrip = () => {
                         ]">
                         Avanti
                     </button>
-
-                    <button v-if="step === 3" @click="saveTrip"
+                    <button v-if="step === 2" @click="saveTrip"
                         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
                         Salva Viaggio
                     </button>
