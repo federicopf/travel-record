@@ -171,7 +171,7 @@ class TripController extends Controller
             'places.*.name' => 'required|string|max:255',
             'places.*.lat' => 'required|numeric',
             'places.*.lng' => 'required|numeric',
-            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:5120',
+            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:102400',
             'deletedPhotos' => 'array',
             'deletedPhotos.*' => 'integer|exists:photos,id',
             'favorite_photo' => 'nullable|string',
