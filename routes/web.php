@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\ThemeController;
 
@@ -25,6 +26,11 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     Route::get('/trip/{trip}/edit', [TripController::class, 'edit'])->name('trip.edit');
     Route::post('/trip/{trip}', [TripController::class, 'update'])->name('trip.update');
     Route::delete('/trip/{trip}', [TripController::class, 'destroy'])->name('trip.destroy');
+
+    Route::get('/trip/{trip}/place/{place}', [PlaceController::class, 'show'])->name('trip.place.show');
+    Route::post('/trip/{trip}/place/{place}/photo', [PlaceController::class, 'uploadPhoto'])->name('trip.place.photo.upload');
+    Route::delete('/trip/{trip}/place/{place}/photo/{photo}', [PlaceController::class, 'deletePhoto'])->name('trip.place.photo.delete');
+    Route::post('/trip/{trip}/photo/{photo}/set-favorite', [PlaceController::class, 'setFavoritePhoto'])->name('trip.photo.setFavorite');
 
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 
