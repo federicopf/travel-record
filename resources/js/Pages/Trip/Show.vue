@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
@@ -17,7 +17,12 @@ const form = useForm({
     lng: ''
 });
 
-// Inizializza la mappa
+// **Gestisce la navigazione al dettaglio del luogo**
+const navigateToPlace = (placeId) => {
+    router.visit(route('trip.place.show', { trip: props.trip.id, place: placeId }));
+};
+
+// **Inizializza la mappa**
 const initializeMap = async () => {
     const loader = new Loader({
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -50,7 +55,7 @@ const initializeMap = async () => {
     }
 };
 
-// Inizializza Google Places Autocomplete e invia il luogo automaticamente
+// **Inizializza Google Places Autocomplete e invia il luogo automaticamente**
 const initializeAutocomplete = async () => {
     const loader = new Loader({
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -63,7 +68,7 @@ const initializeAutocomplete = async () => {
 
         if (placeInput.value) {
             autocomplete = new google.maps.places.Autocomplete(placeInput.value, {
-                types: ['establishment', 'geocode']
+                types: []
             });
 
             autocomplete.addListener('place_changed', () => {
@@ -74,11 +79,11 @@ const initializeAutocomplete = async () => {
                     form.lat = place.geometry.location.lat();
                     form.lng = place.geometry.location.lng();
 
-                    // Manda subito i dati al backend
+                    // **Manda subito i dati al backend**
                     form.post(route('trip.place.addPlace', props.trip.id), {
                         onSuccess: () => {
                             form.reset();
-                            placeInput.value.value = ''; // Resetta il campo input
+                            placeInput.value.value = ''; // **Resetta l'input**
                         }
                     });
                 }
@@ -120,8 +125,10 @@ onMounted(() => {
             <h2 class="text-2xl font-bold text-gray-700 mt-6 mb-4">Luoghi visitati</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div v-for="place in trip.places" :key="place.id"
-                    class="relative bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition transform hover:scale-105">
-                    
+                    class="relative bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition transform hover:scale-105"
+                    @click.stop="navigateToPlace(place.id)"> 
+                    <!-- 🔹 `@click.stop` EVITA che il click vada in conflitto con altri eventi -->
+
                     <div class="relative">
                         <img v-if="place.photos.length > 0" :src="place.photos[0].path" class="w-full h-40 object-cover">
                         <div v-else class="w-full h-40 bg-gray-300 flex items-center justify-center">
