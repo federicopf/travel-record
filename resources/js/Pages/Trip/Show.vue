@@ -157,6 +157,8 @@ onMounted(() => {
                 </div>
             </div>
 
+            <hr class="mt-10 border-black"> 
+            
             <!-- Bottone per eliminare il viaggio -->
             <div class="mt-10 flex justify-center">
                 <button 
