@@ -166,15 +166,6 @@ class TripController extends Controller
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'places' => 'required|array|min:1',
-            'places.*.id' => 'nullable|integer|exists:places,id',
-            'places.*.name' => 'required|string|max:255',
-            'places.*.lat' => 'required|numeric',
-            'places.*.lng' => 'required|numeric',
-            'newPhotos.*.*' => 'file|mimes:jpeg,png,jpg,svg,webp,mp4,mov,avi|max:102400',
-            'deletedPhotos' => 'array',
-            'deletedPhotos.*' => 'integer|exists:photos,id',
-            'favorite_photo' => 'nullable|string',
         ]);
 
         $trip->update([
@@ -183,85 +174,9 @@ class TripController extends Controller
             'end_date' => $validated['end_date'],
         ]);
 
-        // 🔥 Eliminazione delle foto selezionate
-        if (!empty($validated['deletedPhotos'])) {
-            $photosToDelete = Photo::whereIn('id', $validated['deletedPhotos'])->get();
-            foreach ($photosToDelete as $photo) {
-                Storage::disk('public')->delete($photo->path);
-                $photo->delete();
-            }
-        }
-
-        $favoriteImagePath = null;
-
-        foreach ($validated['places'] as $placeData) {
-            $place = $trip->places()->updateOrCreate(
-                ['id' => $placeData['id']],
-                [
-                    'name' => $placeData['name'],
-                    'lat' => $placeData['lat'],
-                    'lng' => $placeData['lng'],
-                ]
-            );
-
-            $placeId = $place->id;
-
-            if (!empty($validated['newPhotos'][$placeId])) {
-                foreach ($validated['newPhotos'][$placeId] as $file) {
-                    $extension = $file->getClientOriginalExtension();
-                    $fileName = time() . '-' . uniqid() . '.' . $extension;
-                    $relativePath = "uploads/trips/{$trip->id}/{$placeId}/{$fileName}";
-                    $absolutePath = storage_path("app/public/{$relativePath}");
-
-                    // Se è un'immagine, comprimila e ridimensionala
-                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp'])) {
-                        $this->compressImage($file->getPathname(), $absolutePath, 75, 1920);
-                    } 
-                    // Se è un video, salvalo senza modificarlo
-                    else if (in_array($extension, ['mp4', 'mov', 'avi', 'svg'])) {
-                        $file->storeAs("uploads/trips/{$trip->id}/{$placeId}", $fileName, 'public');
-                    }
-
-                    $place->photos()->create(['path' => $relativePath]);
-
-                    // Se è l'immagine preferita, aggiorna il percorso
-                    if (in_array($extension, ['jpeg', 'png', 'jpg', 'webp']) && $validated['favorite_photo'] === $file->getClientOriginalName()) {
-                        $favoriteImagePath = $relativePath;
-                    }
-                }
-            }
-        }
-
-        if (!$favoriteImagePath && !empty($validated['favorite_photo'])) {
-            if (str_contains($validated['favorite_photo'], 'uploads/')) {
-                $validated['favorite_photo'] = 'uploads/' . explode('uploads/', $validated['favorite_photo'])[1];
-            }
-
-            $existingPhoto = Photo::where('path', $validated['favorite_photo'])->first();
-
-            if ($existingPhoto) {
-                $favoriteImagePath = $existingPhoto->path;
-            }
-        }
-
-        if ($favoriteImagePath) {
-            $trip->update(['image' => $favoriteImagePath]);
-        } else {
-            // Se nessuna immagine è preferita, usa la prima disponibile
-            $firstImage = optional($trip->places()
-                ->with('photos')
-                ->get()
-                ->flatMap(fn ($place) => $place->photos)
-                ->filter(fn ($photo) => in_array(pathinfo($photo->path, PATHINFO_EXTENSION), ['jpeg', 'jpg', 'png', 'webp']))
-                ->first())->path;
-
-            if ($firstImage) {
-                $trip->update(['image' => $firstImage]);
-            }
-        }
-
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
+
 
     public function destroy(Trip $trip)
     {

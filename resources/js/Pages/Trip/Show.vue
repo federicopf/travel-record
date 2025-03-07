@@ -98,7 +98,7 @@ onMounted(() => {
             <div class="flex my-4">
                 <Link :href="route('trip.edit', trip.id)"
                 :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-${$colorScheme}-600 transition duration-300`">
-                    Modifica Viaggio
+                    Modifica viaggio
                 </Link>
             </div>
 

@@ -18,7 +18,7 @@ const submitForm = () => {
         },
         onSuccess: () => {
             error.value = null;
-            window.location.href = route('home'); // Forza il reload totale
+            window.location.href = route('home'); 
         }
     });
 };
