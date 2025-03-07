@@ -33,7 +33,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()->route('home')->withHeaders(['Cache-Control' => 'no-store']);
     }
 
     // Mostra la pagina di registrazione

@@ -16,8 +16,6 @@ createInertiaApp({
             props.initialPage.props.auth?.user?.color_scheme || 'blue'
         );
         
-        //FORZA AGGIORNAMENTO COMPUTED SOPRA
-        console.log(props.initialPage.props.auth?.user?.color_scheme);
         app.config.globalProperties.$colorScheme = colorSchemeComputed.value;
 
         app.use(plugin)
