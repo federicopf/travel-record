@@ -31,7 +31,7 @@ class PlaceController extends Controller
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
         $request->validate([
-            'file' => 'required|mimes:jpeg,png,jpg,webp,mp4,webm,ogg|max:10240' // Supporta immagini e video
+            'file' => 'required|mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:10240' // Supporta immagini e video
         ]);
 
         $file = $request->file('file');

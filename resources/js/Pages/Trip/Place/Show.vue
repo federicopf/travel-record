@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { Loader } from '@googlemaps/js-api-loader';
-import { EyeSlashIcon, StarIcon, TrashIcon, ArrowUpTrayIcon } from '@heroicons/vue/24/solid';
+import { EyeSlashIcon, StarIcon, TrashIcon, ArrowUpTrayIcon, XMarkIcon  } from '@heroicons/vue/24/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip', 'place']);
@@ -15,7 +15,14 @@ const fullscreenMedia = ref(null);
 const favoritePhotoId = ref(props.trip.image);
 
 const handleFileUpload = (event) => {
-    form.files = Array.from(event.target.files).slice(0, 5);
+    const selectedFiles = Array.from(event.target.files);
+
+    if (selectedFiles.length > 5) {
+        alert("Puoi caricare un massimo di 5 file alla volta!");
+        return;
+    }
+
+    form.files = selectedFiles;
     if (form.files.length > 0) {
         uploadFiles();
     }
@@ -97,7 +104,7 @@ onMounted(() => {
             <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
 
             <div class="my-6">
-                <h2 class="text-2xl font-bold text-gray-700">Carica fino a 5 file</h2>
+                <h2 class="text-2xl font-bold text-gray-700">Carica fino a 5 file alla volta!</h2>
                 <label :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded flex items-center cursor-pointer hover:bg-${$colorScheme}-600 mt-3`">
                     <ArrowUpTrayIcon class="w-5 h-5 mr-2" /> Seleziona File
                     <input type="file" multiple class="hidden" @input="handleFileUpload" accept="image/*,video/*">
@@ -141,7 +148,7 @@ onMounted(() => {
 
         <div v-if="showFullscreen" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 flex justify-center items-center z-50">
             <div class="absolute top-4 right-4 text-white text-3xl cursor-pointer z-50" @click="closeFullscreen">
-                <EyeSlashIcon class="w-8 h-8" />
+                <XMarkIcon class="w-8 h-8" />
             </div>
             
             <div class="flex justify-center items-center w-full h-full">
