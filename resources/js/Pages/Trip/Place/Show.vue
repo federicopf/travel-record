@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { ref, onMounted, computed } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { Loader } from '@googlemaps/js-api-loader';
 import { EyeSlashIcon, StarIcon, TrashIcon, ArrowUpTrayIcon, XMarkIcon  } from '@heroicons/vue/24/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip', 'place']);
+const page = usePage();
+
 const map = ref(null);
 const mapInstance = ref(null);
 const form = useForm({ files: [] });
@@ -13,6 +15,14 @@ const form = useForm({ files: [] });
 const showFullscreen = ref(false);
 const fullscreenMedia = ref(null);
 const favoritePhotoId = ref(props.trip.image);
+
+const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+
+let autocomplete = null;
+
+const userPointerUrl = computed(() => {
+    return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
+});
 
 const handleFileUpload = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -82,6 +92,11 @@ const initializeMap = async () => {
         new google.maps.Marker({
             position: { lat: parseFloat(props.place.lat), lng: parseFloat(props.place.lng) },
             map: mapInstance.value,
+            icon: {
+                url: userPointerUrl.value, // Usa il Map Pointer dell'utente
+                scaledSize: new google.maps.Size(40, 40),
+                anchor: new google.maps.Point(20, 40)
+            },
             title: props.place.name
         });
 
@@ -97,6 +112,14 @@ onMounted(() => {
 
 <template>
     <AppLayout>
+
+        <div class="flex my-4">
+            <Link :href="route('trip.show', props.trip.id)"
+                class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                Torna al Viaggio
+            </Link>
+        </div>
+
         <div class="container mx-auto px-4 py-6">
             <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6`">{{ place.name }}</h1>
             <p class="text-gray-500 text-lg">{{ place.address }}</p>

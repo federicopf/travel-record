@@ -1,14 +1,23 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
-import { Link, useForm, router } from '@inertiajs/vue3';
+import { Link, useForm, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
+const page = usePage();
+
 const map = ref(null);
 const mapInstance = ref(null);
 const placeInput = ref(null);
+
+const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+
 let autocomplete = null;
+
+const userPointerUrl = computed(() => {
+    return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
+});
 
 const form = useForm({
     name: '',
@@ -46,6 +55,11 @@ const initializeMap = async () => {
             new google.maps.Marker({
                 position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
                 map: mapInstance.value,
+                icon: {
+                    url: userPointerUrl.value, // Usa il Map Pointer dell'utente
+                    scaledSize: new google.maps.Size(40, 40),
+                    anchor: new google.maps.Point(20, 40)
+                },
                 title: place.name
             });
         });
@@ -111,7 +125,7 @@ onMounted(() => {
 
             <div class="flex my-4">
                 <Link :href="route('trip.edit', trip.id)"
-                    class="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300">
+                    :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-${$colorScheme}-600 transition duration-300`">
                     Modifica viaggio
                 </Link>
             </div>
@@ -151,7 +165,7 @@ onMounted(() => {
                     <input ref="placeInput" type="text" placeholder="Cerca un luogo..." 
                         class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
                     
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-600 transition">
+                    <button :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded shadow-lg hover:bg-${$colorScheme}-600 transition`">
                         +
                     </button>
                 </div>
