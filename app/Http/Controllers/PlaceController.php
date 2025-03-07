@@ -27,35 +27,40 @@ class PlaceController extends Controller
         ]);
     }
 
-    // 📌 Caricare immagini
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
         $request->validate([
-            'file' => 'required|mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:10240' // Supporta immagini e video
+            'files' => 'required|array', // Assicura che files sia un array
+            'files.*' => 'mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:10240' // Valida ogni file
         ]);
-
-        $file = $request->file('file');
-        $path = "uploads/trips/{$trip->id}/{$place->id}";
-
-        // Verifica se è un'immagine o un video
-        if (in_array($file->getClientOriginalExtension(), ['jpeg', 'jpg', 'png', 'webp'])) {
-            // Percorso temporaneo per salvare l'immagine compressa
-            $destinationPath = storage_path("app/public/{$path}/" . time() . '-' . $file->getClientOriginalName());
-            $this->compressImage($file->getPathname(), $destinationPath);
-            $finalPath = str_replace(storage_path("app/public/"), '', $destinationPath);
-        } else {
-            // Caricamento normale per i video
-            $finalPath = $file->store($path, 'public');
+    
+        $uploadedPaths = [];
+    
+        foreach ($request->file('files') as $file) {
+            $path = "uploads/trips/{$trip->id}/{$place->id}";
+    
+            if (in_array($file->getClientOriginalExtension(), ['jpeg', 'jpg', 'png', 'webp'])) {
+                // Percorso temporaneo per salvare l'immagine compressa
+                $destinationPath = storage_path("app/public/{$path}/" . time() . '-' . $file->getClientOriginalName());
+                $this->compressImage($file->getPathname(), $destinationPath);
+                $finalPath = str_replace(storage_path("app/public/"), '', $destinationPath);
+            } else {
+                // Caricamento normale per i video
+                $finalPath = $file->store($path, 'public');
+            }
+    
+            // Salva il file nel database
+            $photo = Photo::create([
+                'place_id' => $place->id,
+                'path' => $finalPath
+            ]);
+    
+            $uploadedPaths[] = $photo->path;
         }
-
-        // Salva il file nel database
-        $photo = Photo::create([
-            'place_id' => $place->id,
-            'path' => $finalPath
-        ]);
-
-        return back()->with('success', 'File caricato con successo!');
+    
+        return back()->with('success', 'File caricati con successo!');
     }
+    
 
     // 📌 Eliminare immagini
     public function deletePhoto(Request $request, Trip $trip, Place $place, Photo $photo)

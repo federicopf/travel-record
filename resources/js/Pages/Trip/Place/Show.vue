@@ -151,7 +151,7 @@ onMounted(() => {
                         </button>
                     </div>
 
-                    <img v-if="photo.path.match(/\.(jpeg|jpg|png|webp)$/i)" :src="photo.path"
+                    <img v-if="photo.path.match(/\.(jpeg|jpg|png|webp|svg)$/i)" :src="photo.path"
                         class="w-full h-60 object-cover rounded-lg cursor-pointer"
                         @click="openFullscreen(photo)">
                     
