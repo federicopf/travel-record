@@ -82,7 +82,6 @@ class PlaceController extends Controller
         return back()->with('success', 'Immagine preferita impostata con successo!');
     }
 
-    
     private function compressImage($sourcePath, $destinationPath, $quality = 75, $maxWidth = 1920)
     {
         // Crea la cartella di destinazione se non esiste
@@ -158,5 +157,22 @@ class PlaceController extends Controller
         return true;
     }
 
+    public function addPlace(Request $request, Trip $trip)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
 
+        $place = new Place();
+        $place->trip_id = $trip->id;
+        $place->name = $request->name;
+        $place->lat = $request->lat;
+        $place->lng = $request->lng;
+        $place->save();
+
+        return redirect()->route('trip.show', $trip->id)->with('success', 'Luogo aggiunto con successo!');
+    }
 }

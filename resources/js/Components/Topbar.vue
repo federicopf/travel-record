@@ -68,8 +68,8 @@ const changeTheme = () => {
                         Opzioni
                     </button>
                     <div v-if="isOptionsOpen" 
-                         class="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50">
-                        <!-- Cambia tema -->
+                        class="absolute left-0 md:left-auto md:right-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50">
+                    <!-- Cambia tema -->
                         <div class="px-4 py-2">
                             <label for="themeSelect" class="block text-sm font-medium text-gray-700">Tema:</label>
                             <select id="themeSelect" v-model="selectedTheme" @change="changeTheme" @click.stop
