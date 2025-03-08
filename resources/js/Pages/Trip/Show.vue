@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
+import { TrashIcon } from '@heroicons/vue/24/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
@@ -10,8 +11,7 @@ const page = usePage();
 const map = ref(null);
 const mapInstance = ref(null);
 const placeInput = ref(null);
-
-const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+const user = page.props.auth?.user ?? null; 
 
 let autocomplete = null;
 
@@ -25,6 +25,13 @@ const form = useForm({
     lat: '',
     lng: ''
 });
+
+// **Funzione per rimuovere un posto dalla lista frontend**
+const removePlace = (placeId) => {
+    if (confirm("Sei sicuro di voler eliminare questo posto?")) {
+        props.trip.places = props.trip.places.filter(place => place.id !== placeId);
+    }
+};
 
 // **Gestisce la navigazione al dettaglio del luogo**
 const navigateToPlace = (placeId) => {
@@ -56,7 +63,7 @@ const initializeMap = async () => {
                 position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
                 map: mapInstance.value,
                 icon: {
-                    url: userPointerUrl.value, // Usa il Map Pointer dell'utente
+                    url: userPointerUrl.value,
                     scaledSize: new google.maps.Size(40, 40),
                     anchor: new google.maps.Point(20, 40)
                 },
@@ -97,7 +104,7 @@ const initializeAutocomplete = async () => {
                     form.post(route('trip.place.addPlace', props.trip.id), {
                         onSuccess: () => {
                             form.reset();
-                            placeInput.value.value = ''; // **Resetta l'input**
+                            placeInput.value.value = ''; 
                         }
                     });
                 }
@@ -141,7 +148,12 @@ onMounted(() => {
                 <div v-for="place in trip.places" :key="place.id"
                     class="relative bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition transform hover:scale-105"
                     @click.stop="navigateToPlace(place.id)"> 
-                    <!-- 🔹 `@click.stop` EVITA che il click vada in conflitto con altri eventi -->
+
+                    <!-- Pulsante di eliminazione -->
+                    <button @click.stop="removePlace(place.id)"
+                        class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition flex items-center justify-center z-10">
+                        <TrashIcon class="w-6 h-6" />
+                    </button>
 
                     <div class="relative">
                         <img v-if="place.photos.length > 0" :src="place.photos[0].path" class="w-full h-40 object-cover">

@@ -153,7 +153,7 @@ onMounted(() => {
 
                     <img v-if="photo.path.match(/\.(jpeg|jpg|png|webp|svg)$/i)" :src="photo.path"
                         class="w-full h-60 object-cover rounded-lg cursor-pointer"
-                        @click="openFullscreen(photo)">
+                        @click="openFullscreen(photo)"> 
                     
                     <video v-else controls class="w-full h-60 rounded-lg shadow cursor-pointer" @click="openFullscreen(photo)">
                         <source :src="photo.path" type="video/mp4">
