@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Trip;
 use App\Models\Place;
 use App\Models\Photo;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+
 use Inertia\Inertia;
 
 class PlaceController extends Controller
@@ -40,7 +43,7 @@ class PlaceController extends Controller
 
         $place->delete();
 
-        return response()->json(['message' => 'Posto e file associati eliminati con successo']);
+        return Redirect::route('trip.show',$trip->id)->with('success', 'Posto eliminato con successo.');
     }
 
 
