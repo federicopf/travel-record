@@ -155,7 +155,7 @@ onMounted(() => {
                         class="w-full h-60 object-cover rounded-lg cursor-pointer"
                         @click="openFullscreen(photo)"> 
                     
-                    <video v-else controls class="w-full h-60 rounded-lg shadow cursor-pointer" @click="openFullscreen(photo)">
+                    <video v-else class="w-full h-60 rounded-lg shadow cursor-pointer" @click.stop="openFullscreen(photo)">
                         <source :src="photo.path" type="video/mp4">
                         <source :src="photo.path" type="video/webm">
                         <source :src="photo.path" type="video/ogg">
