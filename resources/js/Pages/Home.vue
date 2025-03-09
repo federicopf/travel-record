@@ -44,7 +44,7 @@ const noTripsMessage = computed(() => {
                 <Link v-for="trip in trips" :key="trip.id" :href="route('trip.show', trip.id)"
                     class="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition block">
                     
-                    <img v-if="trip.image" :src="trip.image" :alt="trip.title" class="w-full h-48 object-cover">
+                    <img v-if="trip.image" :src="trip.image" alt="Immagine non trovata!" class="w-full h-48 object-cover">
                     <p v-else class="p-3 flex h-48 italic text-center items-center justify-center bg-gray-200">
                         Nessuna immagine per questo viaggio! Male...
                     </p>

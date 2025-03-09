@@ -131,7 +131,7 @@ onMounted(() => {
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
             <div v-if="trip.image" class="mb-6">
-                <img :src="trip.image" alt="Non trovata!" class="w-full h-64 object-cover rounded-lg shadow-lg">
+                <img :src="trip.image" alt="Immagine non trovata!" class="w-full h-64 object-cover rounded-lg shadow-lg">
             </div>
 
             <h1 class="text-3xl font-bold text-gray-700 mb-6">{{ trip.title }}</h1>
