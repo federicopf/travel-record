@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import { Loader } from '@googlemaps/js-api-loader';
 import { EyeSlashIcon, StarIcon, TrashIcon, ArrowUpTrayIcon, XMarkIcon  } from '@heroicons/vue/24/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -16,7 +16,11 @@ const showFullscreen = ref(false);
 const fullscreenMedia = ref(null);
 const favoritePhotoId = ref(props.trip.image);
 
-const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+const uploading = ref(false); 
+const uploadProgress = ref(0); 
+const totalFiles = ref(0); 
+
+const user = page.props.auth?.user ?? null;
 
 let autocomplete = null;
 
@@ -24,7 +28,7 @@ const userPointerUrl = computed(() => {
     return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
 });
 
-const handleFileUpload = (event) => {
+const handleFileUpload = async (event) => {
     const selectedFiles = Array.from(event.target.files);
 
     if (selectedFiles.length > 5) {
@@ -32,17 +36,36 @@ const handleFileUpload = (event) => {
         return;
     }
 
-    form.files = selectedFiles;
-    if (form.files.length > 0) {
-        uploadFiles();
+    uploading.value = true; // 🔥 Inizia il loading
+    uploadProgress.value = 0;
+    totalFiles.value = selectedFiles.length;
+
+    for (const file of selectedFiles) {
+        await uploadFile(file);
+        uploadProgress.value++; // 🔥 Aggiorna il contatore
     }
+
+    uploading.value = false; // 🔥 Fine caricamento
 };
 
-const uploadFiles = () => {
-    form.post(route('trip.place.photo.upload', { trip: props.trip.id, place: props.place.id }), {
-        onSuccess: () => form.reset('files'),
+const uploadFile = (file) => {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('files[]', file); 
+
+        router.post(route('trip.place.photo.upload', { trip: props.trip.id, place: props.place.id }), formData, {
+            onSuccess: () => {
+                console.log(`File ${file.name} caricato con successo!`);
+                resolve(); 
+            },
+            onError: (errors) => {
+                console.error(`Errore nel caricamento del file ${file.name}:`, errors);
+                reject(errors); 
+            }
+        });
     });
 };
+
 
 const deleteFile = (photoId) => {
     if (confirm("Sei sicuro di voler eliminare questo file?")) {
@@ -142,11 +165,11 @@ onMounted(() => {
                         <button 
                             @click="setFavoritePhoto(photo.id, photo.path)" 
                             :class="`p-2 rounded-full shadow ${
-                                isFavorite(photo.id, photo.path) ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                                isFavorite(photo.id, photo.path) ? 'bg-yellow-500 text-white hover:bg-yellow-600 z-50' : 'bg-gray-300 text-gray-700 hover:bg-gray-400 z-50'
                             }`">
                             <StarIcon class="w-5 h-5" />
                         </button>
-                        <button @click="deleteFile(photo.id)" class="bg-red-500 text-white p-2 rounded-full shadow hover:bg-red-600">
+                        <button @click="deleteFile(photo.id)" class="bg-red-500 text-white p-2 rounded-full shadow hover:bg-red-600 z-50">
                             <TrashIcon class="w-5 h-5" />
                         </button>
                     </div>
@@ -166,6 +189,14 @@ onMounted(() => {
 
             <div v-else class="my-4 p-4 bg-red-100 text-red-700 text-center rounded-lg">
                 Nessun media disponibile per questo luogo.
+            </div>
+        </div>
+
+        <div v-if="uploading" class="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50">
+            <p class="text-white text-lg mb-4">Caricamento file {{ uploadProgress }} di {{ totalFiles }}...</p>
+            <div class="w-2/3 md:w-1/3 bg-gray-300 rounded-full h-3">
+                <div class="bg-blue-500 h-3 rounded-full transition-all"
+                    :style="{ width: (uploadProgress / totalFiles) * 100 + '%' }"></div>
             </div>
         </div>
 
