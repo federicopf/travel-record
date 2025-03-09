@@ -30,22 +30,24 @@ const userPointerUrl = computed(() => {
 
 const handleFileUpload = async (event) => {
     const selectedFiles = Array.from(event.target.files);
+    const existingFiles = props.place.photos ? props.place.photos.length : 0;
+    const totalAfterUpload = existingFiles + selectedFiles.length;
 
-    if (selectedFiles.length > 5) {
-        alert("Puoi caricare un massimo di 5 file alla volta!");
+    if (totalAfterUpload > 30) {
+        alert(`Puoi avere al massimo 30 file in totale! Attualmente hai ${existingFiles} file.`);
         return;
     }
 
-    uploading.value = true; // 🔥 Inizia il loading
+    uploading.value = true; 
     uploadProgress.value = 0;
     totalFiles.value = selectedFiles.length;
 
     for (const file of selectedFiles) {
         await uploadFile(file);
-        uploadProgress.value++; // 🔥 Aggiorna il contatore
+        uploadProgress.value++; 
     }
 
-    uploading.value = false; // 🔥 Fine caricamento
+    uploading.value = false; 
 };
 
 const uploadFile = (file) => {
@@ -150,7 +152,7 @@ onMounted(() => {
             <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
 
             <div class="my-6">
-                <h2 class="text-2xl font-bold text-gray-700">Carica fino a 5 file alla volta!</h2>
+                <h2 class="text-2xl font-bold text-gray-700">Carica fino a 30 file!</h2>
                 <label :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded flex items-center cursor-pointer hover:bg-${$colorScheme}-600 mt-3`">
                     <ArrowUpTrayIcon class="w-5 h-5 mr-2" /> Seleziona File
                     <input type="file" multiple class="hidden" @input="handleFileUpload" accept="image/*,video/*">
