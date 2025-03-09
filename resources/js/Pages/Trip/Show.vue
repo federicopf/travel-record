@@ -26,10 +26,18 @@ const form = useForm({
     lng: ''
 });
 
+// Funzione per eliminare il viaggio
+const deleteTrip = () => {
+    if (confirm("Sei sicuro di voler eliminare questo viaggio? L'operazione non può essere annullata.")) {
+        form.delete(route('trip.destroy', props.trip.id));
+    }
+};
+
+
 // **Funzione per rimuovere un posto dalla lista frontend**
 const removePlace = (placeId) => {
     if (confirm("Sei sicuro di voler eliminare questo posto?")) {
-        props.trip.places = props.trip.places.filter(place => place.id !== placeId);
+        form.delete(route('trip.place.destroy', { trip: props.trip.id, place: placeId }));
     }
 };
 
@@ -100,7 +108,6 @@ const initializeAutocomplete = async () => {
                     form.lat = place.geometry.location.lat();
                     form.lng = place.geometry.location.lng();
 
-                    // **Manda subito i dati al backend**
                     form.post(route('trip.place.addPlace', props.trip.id), {
                         onSuccess: () => {
                             form.reset();

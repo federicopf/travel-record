@@ -51,7 +51,7 @@ const deleteFile = (photoId) => {
 };
 
 const setFavoritePhoto = (photoId, photoPath) => {
-    form.post(route('trip.photo.setFavorite', { trip: props.trip.id, photo: photoId }), {
+    form.post(route('trip.place.setFavorite', { trip: props.trip.id, photo: photoId }), {
         onSuccess: () => {
             favoritePhotoId.value = photoId;
         },

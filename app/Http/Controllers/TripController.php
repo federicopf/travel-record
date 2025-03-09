@@ -184,19 +184,18 @@ class TripController extends Controller
         if (!$this->authorizeTrip($trip->id)) {
             return Redirect::route('home')->with('error', 'Non sei autorizzato a eliminare questo viaggio.');
         }
+        
+        $path = "uploads/trips/{$trip->id}";
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->deleteDirectory($path);
+        }
 
         // Elimina tutte le foto associate ai luoghi del viaggio
         foreach ($trip->places as $place) {
             foreach ($place->photos as $photo) {
-                Storage::disk('public')->delete($photo->path);
                 $photo->delete();
             }
             $place->delete();
-        }
-
-        // Elimina l'immagine principale del viaggio (se presente)
-        if ($trip->image) {
-            Storage::disk('public')->delete($trip->image);
         }
 
         // Elimina il viaggio

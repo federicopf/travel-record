@@ -27,6 +27,23 @@ class PlaceController extends Controller
         ]);
     }
 
+    public function destroy(Trip $trip, Place $place)
+    {
+        if ($place->trip_id !== $trip->id) {
+            return response()->json(['error' => 'Il posto non appartiene a questo viaggio'], 403);
+        }
+
+        $path = "uploads/trips/{$trip->id}/{$place->id}";
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->deleteDirectory($path);
+        }
+
+        $place->delete();
+
+        return response()->json(['message' => 'Posto e file associati eliminati con successo']);
+    }
+
+
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
         $request->validate([
@@ -60,9 +77,7 @@ class PlaceController extends Controller
     
         return back()->with('success', 'File caricati con successo!');
     }
-    
 
-    // 📌 Eliminare immagini
     public function deletePhoto(Request $request, Trip $trip, Place $place, Photo $photo)
     {
         if ($photo->place_id !== $place->id) {
@@ -75,7 +90,6 @@ class PlaceController extends Controller
         return back()->with('success', 'Foto eliminata con successo!');
     }
 
-    // 📌 Impostare un'immagine come preferita nel viaggio
     public function setFavoritePhoto(Request $request, Trip $trip, Photo $photo)
     {
         if ($photo->place->trip_id !== $trip->id) {
