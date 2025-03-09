@@ -6,14 +6,14 @@ const emit = defineEmits(['update:modelValue']);
 
 const isSingleDay = ref(false);
 
-// Sincronizza endDate con startDate se "Giornata unica" è attivata
+// Ogni volta che la startDate cambia, aggiorna sempre endDate
 watch(() => props.modelValue.startDate, (newStartDate) => {
-  if (isSingleDay.value) {
+  if (newStartDate) {
     emit('update:modelValue', { ...props.modelValue, endDate: newStartDate });
   }
 });
 
-// Se isSingleDay viene attivato, forza la data di fine uguale alla data di inizio
+// Se viene attivata "Giornata unica", forza endDate uguale a startDate
 watch(isSingleDay, (newValue) => {
   if (newValue) {
     emit('update:modelValue', { ...props.modelValue, endDate: props.modelValue.startDate });
@@ -23,13 +23,15 @@ watch(isSingleDay, (newValue) => {
 
 <template>
   <div>
+    <!-- Destinazione -->
     <label class="block mb-2 text-gray-700">Destinazione</label>
     <input v-model="modelValue.title" type="text" placeholder="Es. Tokyo, Giappone"
-      :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
+      class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300">
 
+    <!-- Data di Inizio -->
     <label class="block mb-2 text-gray-700">Data di Inizio</label>
     <input v-model="modelValue.startDate" type="date"
-      :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
+      class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300">
 
     <!-- Checkbox per giornata unica -->
     <div class="flex items-center mb-4">
@@ -37,11 +39,9 @@ watch(isSingleDay, (newValue) => {
       <label for="single-day" class="text-gray-700">Giornata unica</label>
     </div>
 
-    <!-- Campo "Data di Fine" visibile solo se giornata unica è disattivata -->
-    <div v-if="!isSingleDay">
-      <label class="block mb-2 text-gray-700">Data di Fine</label>
-      <input v-model="modelValue.endDate" type="date"
-        :class="`w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-${$colorScheme}-300`">
-    </div>
+    <!-- Campo "Data di Fine" -->
+    <label class="block mb-2 text-gray-700">Data di Fine</label>
+    <input v-model="modelValue.endDate" type="date"
+      class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300">
   </div>
 </template>
