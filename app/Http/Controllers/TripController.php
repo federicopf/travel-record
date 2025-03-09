@@ -177,7 +177,6 @@ class TripController extends Controller
         return Redirect::route('trip.show', $trip)->with('success', 'Viaggio aggiornato con successo!');
     }
 
-
     public function destroy(Trip $trip)
     {
         // Controlla se l'utente ha il permesso di eliminare il viaggio

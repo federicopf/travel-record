@@ -33,7 +33,6 @@ const deleteTrip = () => {
     }
 };
 
-
 // **Funzione per rimuovere un posto dalla lista frontend**
 const removePlace = (placeId) => {
     if (confirm("Sei sicuro di voler eliminare questo posto?")) {
