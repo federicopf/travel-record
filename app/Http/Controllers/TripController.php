@@ -126,14 +126,20 @@ class TripController extends Controller
         $trip->start_date = Carbon::parse($trip->start_date)->format('d/m/Y');
         $trip->end_date = Carbon::parse($trip->end_date)->format('d/m/Y');
 
-        $trip->places->each(function ($place) {
-            $place->photos->each(function ($photo) {
-                $photo->path = "/storage/{$photo->path}";
-            });
+        $trip->places->transform(function ($place) {
+            $filteredPhotos = collect($place->photos)->filter(function ($photo) {
+                return preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', strtolower($photo->path));
+            })->values();
+
+            $firstPhoto = $filteredPhotos->isNotEmpty() ? "/storage/" . $filteredPhotos->first()->path : null;
+
+            $place->firstPhoto = $firstPhoto;
+
+            return $place;
         });
 
         return Inertia::render('Trip/Show', [
-            'trip' => $trip
+            'trip' => $trip->toArray()
         ]);
     }
     
