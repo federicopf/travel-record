@@ -63,6 +63,10 @@ const changeTheme = () => {
             </nav>
 
             <div class="flex items-center space-x-4">
+                <button @click.stop="toggleMobileMenu" class="md:hidden text-white text-lg font-bold focus:outline-none">
+                    {{ isMobileMenuOpen ? 'Chiudi' : 'Menu' }}
+                </button>
+                
                 <div class="relative">
                     <button @click.stop="toggleOptionsMenu" class="text-white text-lg font-bold focus:outline-none">
                         Opzioni
@@ -97,10 +101,6 @@ const changeTheme = () => {
                         </button>
                     </div>
                 </div>
-
-                <button @click.stop="toggleMobileMenu" class="md:hidden text-white text-lg font-bold focus:outline-none">
-                    {{ isMobileMenuOpen ? 'Chiudi' : 'Menu' }}
-                </button>
             </div>
         </div>
 
