@@ -48,7 +48,7 @@ class PlaceController extends Controller
     {
         $request->validate([
             'files' => 'required|array', // Assicura che files sia un array
-            'files.*' => 'mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:10240' // Valida ogni file
+            'files.*' => 'mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:102400' // Valida ogni file
         ]);
     
         $uploadedPaths = [];
