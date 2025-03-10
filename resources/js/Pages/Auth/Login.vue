@@ -30,7 +30,7 @@ const togglePasswordVisibility = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex-col flex items-center justify-start pt-14 bg-gradient-to-r from-blue-400 to-blue-600">
+  <div class="min-h-screen flex-col flex items-center justify-start pt-7 bg-gradient-to-r from-blue-400 to-blue-600">
         <!-- Logo come sfondo di un div -->
         <div 
             class="w-52 h-52 mx-auto mb-0 bg-no-repeat bg-center bg-contain"
