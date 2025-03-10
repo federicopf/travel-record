@@ -67,7 +67,13 @@
 </script>
 
 <template>  
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-blue-600">
+    <div class="min-h-screen flex-col flex items-center justify-start pt-14 bg-gradient-to-r from-blue-400 to-blue-600">
+        <!-- Logo come sfondo di un div -->
+        <div 
+            class="w-52 h-52 mx-auto mb-0 bg-no-repeat bg-center bg-contain"
+            style="background-image: url('/assets/icon/Logo/White/Travel%20Record%20Logo%20(White).png');">
+        </div>
+        
         <div class="bg-white p-8 rounded-2xl shadow-xl w-96">
             
             <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">
