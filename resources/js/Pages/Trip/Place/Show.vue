@@ -32,22 +32,37 @@ const handleFileUpload = async (event) => {
     const selectedFiles = Array.from(event.target.files);
     const existingFiles = props.place.photos ? props.place.photos.length : 0;
     const totalAfterUpload = existingFiles + selectedFiles.length;
+    const maxFileSize = 1024 * 1024 * 100; // 100MB per file
+    const validFiles = [];
 
     if (totalAfterUpload > 30) {
         alert(`Puoi avere al massimo 30 file in totale! Attualmente hai ${existingFiles} file.`);
         return;
     }
 
-    uploading.value = true; 
-    uploadProgress.value = 0;
-    totalFiles.value = selectedFiles.length;
-
     for (const file of selectedFiles) {
-        await uploadFile(file);
-        uploadProgress.value++; 
+        if (file.size > maxFileSize) {
+            alert(`Il file "${file.name}" è troppo grande! Massimo 100MB per file.`);
+            return; 
+        }
+        validFiles.push(file);
     }
 
-    uploading.value = false; 
+    if (validFiles.length === 0) {
+        alert("Nessun file valido selezionato.");
+        return;
+    }
+
+    uploading.value = true;
+    uploadProgress.value = 0;
+    totalFiles.value = validFiles.length;
+
+    for (const file of validFiles) {
+        await uploadFile(file);
+        uploadProgress.value++;
+    }
+
+    uploading.value = false;
 };
 
 const uploadFile = (file) => {
