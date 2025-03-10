@@ -6,16 +6,20 @@ const emit = defineEmits(['update:modelValue']);
 
 const isSingleDay = ref(false);
 
-// Ogni volta che la startDate cambia, aggiorna sempre endDate
+// Ogni volta che cambia la data di inizio, aggiorna sempre la data di fine
 watch(() => props.modelValue.startDate, (newStartDate) => {
   if (newStartDate) {
     emit('update:modelValue', { ...props.modelValue, endDate: newStartDate });
   }
 });
 
-// Se viene attivata "Giornata unica", forza endDate uguale a startDate
+// Se cambia lo stato di "Giornata unica"
 watch(isSingleDay, (newValue) => {
   if (newValue) {
+    // Se è giornata unica, la data di fine diventa la data di inizio e si nasconde il campo
+    emit('update:modelValue', { ...props.modelValue, endDate: props.modelValue.startDate });
+  } else {
+    // Se NON è giornata unica, la data di fine resta visibile e viene impostata alla data di inizio
     emit('update:modelValue', { ...props.modelValue, endDate: props.modelValue.startDate });
   }
 });
@@ -39,9 +43,11 @@ watch(isSingleDay, (newValue) => {
       <label for="single-day" class="text-gray-700">Giornata unica</label>
     </div>
 
-    <!-- Campo "Data di Fine" -->
-    <label class="block mb-2 text-gray-700">Data di Fine</label>
-    <input v-model="modelValue.endDate" type="date"
-      class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300">
+    <!-- Campo "Data di Fine" (si nasconde solo se è giornata unica) -->
+    <div v-if="!isSingleDay">
+      <label class="block mb-2 text-gray-700">Data di Fine</label>
+      <input v-model="modelValue.endDate" type="date"
+        class="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-300">
+    </div>
   </div>
 </template>
