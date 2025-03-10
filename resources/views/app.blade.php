@@ -14,15 +14,9 @@
 
 <script>
     window.addEventListener("pageshow", function (event) {
-        const TIMEOUT = 30 * 60 * 1000; // 30 minuti
-        const now = Date.now();
-        const lastVisit = sessionStorage.getItem("lastVisit");
-
-        if (event.persisted || (lastVisit && now - lastVisit > TIMEOUT)) {
-            window.location.reload(true); // Forza un reload totale
+        if (event.persisted) {
+            window.location.reload();
         }
-
-        sessionStorage.setItem("lastVisit", now);
     });
 
 </script>
