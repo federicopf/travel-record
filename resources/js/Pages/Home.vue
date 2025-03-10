@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { computed, onMounted } from 'vue';
 
 // Otteniamo i dati dell'utente e dei viaggi
 const page = usePage();
@@ -20,7 +20,33 @@ const noTripsMessage = computed(() => {
         ? 'Nessun viaggio disponibile. Aggiungine uno per voi!' 
         : 'Nessun viaggio disponibile. Aggiungine uno!';
 });
+
+// **1️⃣ Sostituisci la cronologia per rimuovere il login**
+const resetHistoryToHome = () => {
+    history.replaceState({ step: 'home' }, '', route('home')); // Sostituisce lo stato iniziale con la Home
+};
+
+const setHomeAsNextStep = () => {
+    history.pushState({ step: 'home' }, '', route('home')); // Aggiunge uno step Home
+};
+
+const forceBackToHome = () => {
+    window.addEventListener("popstate", (event) => {
+        if (!event.state || event.state.step !== 'home') {
+            router.replace(route("home")); // Forza sempre la Home se non è lo stato corretto
+        }
+    });
+};
+
+onMounted(() => {
+    resetHistoryToHome();
+    setHomeAsNextStep();
+    forceBackToHome();
+
+    console.log(history);
+});
 </script>
+
 
 <template>
     <AppLayout>
