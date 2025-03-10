@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/assets/icon/Icon/Color/Travel%20Record%20Icon%20(Color).svg">
     <title>Travel record</title>
     @vite('resources/js/app.js')
     @routes
