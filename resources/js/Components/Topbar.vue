@@ -23,18 +23,28 @@ const themes = [
     { id: 3, name: 'Rosa' }
 ];
 
-// Aprire e chiudere il menu
-const toggleMobileMenu = () => (isMobileMenuOpen.value = !isMobileMenuOpen.value);
+// Aprire e chiudere il menu mobile e il menu opzioni
+const toggleMobileMenu = () => {
+    isMobileMenuOpen.value = !isMobileMenuOpen.value;
+    if (isMobileMenuOpen.value) {
+        isOptionsOpen.value = false; // Chiude le opzioni se il menu mobile è aperto
+    }
+};
+
 const toggleOptionsMenu = (event) => {
     event.stopPropagation();
     isOptionsOpen.value = !isOptionsOpen.value;
+    if (isOptionsOpen.value) {
+        isMobileMenuOpen.value = false; // Chiude il menu mobile se le opzioni sono aperte
+    }
 };
+
 const closeMenus = () => {
     isMobileMenuOpen.value = false;
     isOptionsOpen.value = false;
 };
 
-// Event listeners
+// Event listeners per chiudere i menu quando si clicca altrove
 onMounted(() => document.addEventListener('click', closeMenus));
 onUnmounted(() => document.removeEventListener('click', closeMenus));
 
