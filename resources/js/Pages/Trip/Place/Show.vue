@@ -130,6 +130,14 @@ const initializeMap = async () => {
     }
 };
 
+const handleOverlayClick = (event) => {
+    if (event.target.tagName === 'DIV') {
+        closeFullscreen();
+    }
+};
+
+
+
 onMounted(() => {
     initializeMap();
 });
@@ -167,11 +175,11 @@ onMounted(() => {
                         <button 
                             @click="setFavoritePhoto(photo.id, photo.path)" 
                             :class="`p-2 rounded-full shadow ${
-                                isFavorite(photo.id, photo.path) ? 'bg-yellow-500 text-white hover:bg-yellow-600 z-50' : 'bg-gray-300 text-gray-700 hover:bg-gray-400 z-50'
+                                isFavorite(photo.id, photo.path) ? 'bg-yellow-500 text-white hover:bg-yellow-600 z-10' : 'bg-gray-300 text-gray-700 hover:bg-gray-400 z-10'
                             }`">
                             <StarIcon class="w-5 h-5" />
                         </button>
-                        <button @click="deleteFile(photo.id)" class="bg-red-500 text-white p-2 rounded-full shadow hover:bg-red-600 z-50">
+                        <button @click="deleteFile(photo.id)" class="bg-red-500 text-white p-2 rounded-full shadow hover:bg-red-600 z-10">
                             <TrashIcon class="w-5 h-5" />
                         </button>
                     </div>
@@ -194,7 +202,7 @@ onMounted(() => {
             </div>
         </div>
 
-        <div v-if="uploading" class="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50">
+        <div v-if="uploading" class="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-10">
             <p class="text-white text-lg mb-4">Caricamento file {{ uploadProgress }} di {{ totalFiles }}...</p>
             <div class="w-2/3 md:w-1/3 bg-gray-300 rounded-full h-3">
                 <div class="bg-blue-500 h-3 rounded-full transition-all"
@@ -202,13 +210,23 @@ onMounted(() => {
             </div>
         </div>
 
-        <div v-if="showFullscreen" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 flex justify-center items-center z-50">
-            <div class="absolute top-4 right-4 text-white text-3xl cursor-pointer z-50" @click="closeFullscreen">
+        <div 
+            v-if="showFullscreen" 
+            class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 flex justify-center items-center z-50 cursor-pointer"
+            @click="handleOverlayClick"
+        >
+            <!-- Icona per chiudere manualmente -->
+            <div class="absolute top-4 right-4 text-white text-3xl cursor-pointer z-10" @click.stop="closeFullscreen">
                 <XMarkIcon class="w-8 h-8" />
             </div>
             
+            <!-- Contenitore media -->
             <div class="flex justify-center items-center w-full h-full">
-                <img v-if="fullscreenMedia.path.match(/\.(jpeg|jpg|png|webp)$/i)" :src="fullscreenMedia.path" class="max-w-full max-h-full object-contain">
+                <img 
+                    v-if="fullscreenMedia.path.match(/\.(jpeg|jpg|png|webp)$/i)" 
+                    :src="fullscreenMedia.path" 
+                    class="max-w-full max-h-full object-contain"
+                >
                 
                 <video v-else controls class="max-w-full max-h-full object-contain">
                     <source :src="fullscreenMedia.path" type="video/mp4">
