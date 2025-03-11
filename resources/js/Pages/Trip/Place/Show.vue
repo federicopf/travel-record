@@ -151,11 +151,10 @@ const handleOverlayClick = (event) => {
     }
 };
 
-
-
 onMounted(() => {
     initializeMap();
 });
+
 </script>
 
 <template>
