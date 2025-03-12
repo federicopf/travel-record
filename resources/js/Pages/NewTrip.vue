@@ -90,7 +90,7 @@ const saveTrip = () => {
                         Avanti
                     </button>
                     <button v-if="step === 2" @click="saveTrip"
-                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        :class="`px-4 py-2 bg-${$colorScheme}-600 text-white rounded hover:bg-${$colorScheme}-700 transition`">
                         Salva Viaggio
                     </button>
                 </div>
