@@ -3,6 +3,12 @@
     import { route } from 'ziggy-js';
     import { useForm } from '@inertiajs/vue3';
     import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid';
+    import TermsAndConditionsModal from '@/Components/Modal/TermsAndConditionsModal.vue'; // Importa la modale
+
+    const showTermsModal = ref(false);
+    const acceptedTerms = ref(false);
+    const termsModalOpened = ref(false);
+
 
     const step = ref(1);
     const isCouple = ref(false);
@@ -202,6 +208,27 @@
                         </button>
                         <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mt-1">{{ form.errors.password_confirmation }}</p>
                     </div>
+
+                    <div class="mb-4 flex items-center">
+                        <input 
+                            type="checkbox" 
+                            id="terms"
+                            v-model="acceptedTerms"
+                            :disabled="!termsModalOpened" 
+                            class="mr-2 disabled:opacity-50 cursor-not-allowed"
+                        />
+                        <label for="terms" class="text-sm text-gray-700">
+                            Dichiaro di aver letto 
+                            <span class="text-blue-600 cursor-pointer underline" @click="showTermsModal = true">
+                                Termini e Condizioni
+                            </span>
+                        </label>
+                    </div>
+
+                    <TermsAndConditionsModal 
+                        v-if="showTermsModal" 
+                        @close="showTermsModal = false; termsModalOpened = true"
+                    />
 
                     <!-- Pulsanti Indietro e Registrati -->
                     <div class="flex gap-4">
