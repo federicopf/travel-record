@@ -4,6 +4,8 @@
     const accept1 = ref(false);
     const accept2 = ref(false);
 
+    const emit = defineEmits(['close']);
+
     const closeModal = () => {
         if (accept1.value && accept2.value) {
             emit('close');
@@ -18,7 +20,7 @@
             
             <p class="text-gray-700 text-sm mb-4">
                 CON RELATIVO CONSENSO
-                In ottemperanza a quanto previsto dalla normativa in oggetto, [signor Federico Germani se sei tu il titolare] [Indirizzo], in qualità di "titolare del trattamento" dei dati che La/Vi riguardano, La/Vi informa che tale trattamento sarà improntato ai principi di correttezza, liceità, trasparenza e tutela della Sua/Vostra riservatezza e dei Suoi/Vostri diritti.
+                In ottemperanza a quanto previsto dalla normativa in oggetto, Federico Germani, help@travelrecord.it, in qualità di "titolare del trattamento" dei dati che La/Vi riguardano, La/Vi informa che tale trattamento sarà improntato ai principi di correttezza, liceità, trasparenza e tutela della Sua/Vostra riservatezza e dei Suoi/Vostri diritti.
             </p>
 
             <h3 class="text-lg font-semibold text-gray-800 mt-4">Finalità del trattamento.</h3>
@@ -75,7 +77,7 @@
                 <label for="accept2">Acconsento al trattamento delle immagini caricate per la creazione del diario personale di viaggio e autorizzo l’accesso solo in caso di richiesta di assistenza tecnica o per obblighi di legge.</label>
             </p>
 
-            <button @click="closeModal" :disabled="!accept1 || !accept2"
+            <button @click="closeModal" type="button" :disabled="!accept1 || !accept2"
                 class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400">
                 Chiudi
             </button>

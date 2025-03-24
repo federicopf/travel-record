@@ -9,7 +9,6 @@
     const acceptedTerms = ref(false);
     const termsModalOpened = ref(false);
 
-
     const step = ref(1);
     const isCouple = ref(false);
     const showPassword = ref(false);
@@ -28,6 +27,15 @@
     const togglePasswordVisibility = () => {
         showPassword.value = !showPassword.value;
     };
+
+    const handleEnterPress = () => {
+        if (step.value === 1) {
+            nextStep();
+        } else {
+            submitForm();
+        }
+    };
+
 
     // Procedi allo step successivo con validazione lato frontend
     const nextStep = () => {
@@ -64,12 +72,24 @@
     };
 
     const submitForm = () => {
+        if (!acceptedTerms.value) {
+            alert("Devi accettare i Termini e Condizioni per continuare."); // Puoi sostituirlo con un messaggio visivo
+            return;
+        }
+        
         form.post(route('register.post'), {
             onError: (errors) => {
                 console.log("Errori di validazione:", errors);
             }
         });
     };
+
+    const handleTermsModalClose = () => {
+        showTermsModal.value = false;
+        termsModalOpened.value = true;
+        acceptedTerms.value = true; 
+    };
+
 </script>
 
 <template>  
@@ -90,7 +110,7 @@
                 {{ step === 1 ? 'Scegli il tipo di registrazione' : 'Completa la registrazione' }}
             </p>
 
-            <form @submit.prevent="submitForm">
+            <form @submit.prevent="submitForm" @keydown.enter.prevent="handleEnterPress">
                 <div v-if="step === 1">
                     <div class="mb-4">
                         <label class="block text-gray-700 font-semibold">Tipo di registrazione</label>
@@ -214,7 +234,7 @@
                             type="checkbox" 
                             id="terms"
                             v-model="acceptedTerms"
-                            :disabled="!termsModalOpened" 
+                            :disabled="!termsModalOpened"
                             class="mr-2 disabled:opacity-50 cursor-not-allowed"
                         />
                         <label for="terms" class="text-sm text-gray-700">
@@ -227,7 +247,7 @@
 
                     <TermsAndConditionsModal 
                         v-if="showTermsModal" 
-                        @close="showTermsModal = false; termsModalOpened = true"
+                        @close="handleTermsModalClose"
                     />
 
                     <!-- Pulsanti Indietro e Registrati -->
