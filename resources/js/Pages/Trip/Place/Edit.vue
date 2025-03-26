@@ -5,6 +5,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip', 'place']);
+
 const placeInput = ref(null);
 let autocomplete = null;
 
@@ -47,17 +48,25 @@ const submit = () => {
 onMounted(() => {
     initializeAutocomplete();
 });
+
+
 </script>
 
 <template>
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-800">Modifica posizione</h1>
-                <Link :href="route('trip.show', props.trip.id)" class="text-blue-500 hover:underline">
-                    ← Torna al viaggio
+            <!-- Pulsante di ritorno -->
+            <div class="mb-4">
+                <Link :href="route('trip.place.show', { trip: props.trip.id, place: props.place.id })"
+                      class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition duration-300">
+                    Torna al posto
                 </Link>
             </div>
+
+            <!-- Titolo -->
+            <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6`">
+                Modifica posizione
+            </h1>
 
             <form @submit.prevent="submit" class="space-y-6">
                 <div>
