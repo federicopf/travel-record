@@ -46,10 +46,13 @@ class PlaceController extends Controller
         return Redirect::route('trip.show',$trip->id)->with('success', 'Posto eliminato con successo.');
     }
     
-    public function edit(Place $place){
-        
+    public function edit(Trip $trip, Place $place)
+    {
+        return Inertia::render('Trip/Place/Edit', [
+            'trip' => $trip,
+            'place' => $place,
+        ]);
     }
-
 
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
