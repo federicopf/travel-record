@@ -171,6 +171,13 @@ onMounted(() => {
             <h1 :class="`text-3xl font-bold text-${$colorScheme}-600 mb-6`">{{ place.name }}</h1>
             <p class="text-gray-500 text-lg">{{ place.address }}</p>
 
+            <div class="flex my-4">
+                <Link :href="route('trip.place.edit',[props.trip.id, props.place.id])"
+                    :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-${$colorScheme}-600 transition duration-300`">
+                    Modifica posto
+                </Link>
+            </div>
+
             <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
 
             <div class="my-6">

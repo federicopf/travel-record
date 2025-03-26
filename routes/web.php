@@ -28,16 +28,19 @@ Route::middleware([AuthenticateUser::class])->group(function () {
         Route::post('/', [TripController::class, 'update'])->name('trip.update');
         Route::delete('/', [TripController::class, 'destroy'])->name('trip.destroy');
     
-        Route::prefix('place/{place}')->group(function () {
-            Route::get('/', [PlaceController::class, 'show'])->name('trip.place.show');
-            Route::delete('/', [PlaceController::class, 'destroy'])->name('trip.place.destroy');
-            Route::post('/photo', [PlaceController::class, 'uploadPhoto'])->name('trip.place.photo.upload');
-            Route::delete('/photo/{photo}', [PlaceController::class, 'deletePhoto'])->name('trip.place.photo.delete');
-            
+        Route::prefix('place/')->group(function () {
+            Route::prefix('{place}')->group(function () {
+                Route::get('/', [PlaceController::class, 'show'])->name('trip.place.show');
+                Route::delete('/', [PlaceController::class, 'destroy'])->name('trip.place.destroy');
+                Route::get('/edit', [PlaceController::class, 'edit'])->name('trip.place.edit');
+
+                Route::post('/photo', [PlaceController::class, 'uploadPhoto'])->name('trip.place.photo.upload');
+                Route::delete('/photo/{photo}', [PlaceController::class, 'deletePhoto'])->name('trip.place.photo.delete');
+            });
+        
+            Route::post('place/{photo}/set-favorite', [PlaceController::class, 'setFavoritePhoto'])->name('trip.place.setFavorite');
+            Route::post('place/add', [PlaceController::class, 'addPlace'])->name('trip.place.addPlace');
         });
-    
-        Route::post('place/{photo}/set-favorite', [PlaceController::class, 'setFavoritePhoto'])->name('trip.place.setFavorite');
-        Route::post('place/add', [PlaceController::class, 'addPlace'])->name('trip.place.addPlace');
     });    
 
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');

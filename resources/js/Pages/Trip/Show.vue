@@ -134,6 +134,13 @@ onMounted(() => {
                 <img :src="trip.image" alt="Immagine non trovata!" class="w-full h-64 object-cover rounded-lg shadow-lg">
             </div>
 
+            <div class="flex my-4">
+                <Link :href="route('home')"
+                    :class="`bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300`">
+                    Indietro
+                </Link>
+            </div>
+
             <h1 class="text-3xl font-bold text-gray-700 mb-6">{{ trip.title }}</h1>
 
             <div class="flex my-4">
