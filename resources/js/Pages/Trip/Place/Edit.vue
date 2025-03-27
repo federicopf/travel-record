@@ -10,9 +10,11 @@ const placeInput = ref(null);
 let autocomplete = null;
 
 const form = useForm({
-    lat: props.place.lat,
-    lng: props.place.lng
+    name: props.place.name,
+    lat: '',
+    lng: ''
 });
+
 
 const initializeAutocomplete = async () => {
     const loader = new Loader({
@@ -31,6 +33,7 @@ const initializeAutocomplete = async () => {
                 const place = autocomplete.getPlace();
 
                 if (place.geometry) {
+                    form.name = place.name;
                     form.lat = place.geometry.location.lat();
                     form.lng = place.geometry.location.lng();
                 }

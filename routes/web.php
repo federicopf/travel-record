@@ -33,6 +33,7 @@ Route::middleware([AuthenticateUser::class])->group(function () {
                 Route::get('/', [PlaceController::class, 'show'])->name('trip.place.show');
                 Route::delete('/', [PlaceController::class, 'destroy'])->name('trip.place.destroy');
                 Route::get('/edit', [PlaceController::class, 'edit'])->name('trip.place.edit');
+                Route::put('/', [PlaceController::class, 'update'])->name('trip.place.update');
 
                 Route::post('/photo', [PlaceController::class, 'uploadPhoto'])->name('trip.place.photo.upload');
                 Route::delete('/photo/{photo}', [PlaceController::class, 'deletePhoto'])->name('trip.place.photo.delete');

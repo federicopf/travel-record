@@ -53,6 +53,25 @@ class PlaceController extends Controller
             'place' => $place,
         ]);
     }
+    
+    public function update(Request $request, Trip $trip, Place $place)
+    {
+        if ($place->trip_id !== $trip->id) {
+            abort(403, 'Accesso non autorizzato.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
+
+        $place->update($validated);
+
+        return redirect()
+            ->route('trip.place.show', ['trip' => $trip->id, 'place' => $place->id])
+            ->with('success', 'Posizione aggiornata con successo!');
+    }
 
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
