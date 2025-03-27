@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Campo Password con Occhio -->
-                    <div class="mb-4 relative">
+                    <div class="mb-2 relative">
                         <input 
                             :type="showPassword ? 'text' : 'password'"
                             v-model="form.password"
@@ -209,11 +209,11 @@
                             <EyeIcon v-if="!showPassword" class="w-5 h-5" />
                             <EyeSlashIcon v-else class="w-5 h-5" />
                         </button>
-                        <p v-if="form.errors.password" class="text-red-500 text-sm mt-1">{{ form.errors.password }}</p>
                     </div>
+                    <p v-if="form.errors.password" class="text-red-500 text-sm mb-2">{{ form.errors.password }}</p>
 
                     <!-- Campo Conferma Password con Occhio -->
-                    <div class="mb-4 relative">
+                    <div class="mb-2 relative">
                         <input 
                             :type="showPassword ? 'text' : 'password'"
                             v-model="form.password_confirmation"
@@ -226,8 +226,8 @@
                             <EyeIcon v-if="!showPassword" class="w-5 h-5" />
                             <EyeSlashIcon v-else class="w-5 h-5" />
                         </button>
-                        <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mt-1">{{ form.errors.password_confirmation }}</p>
                     </div>
+                    <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mb-2">{{ form.errors.password_confirmation }}</p>
 
                     <div class="mb-4 flex items-center">
                         <input 
