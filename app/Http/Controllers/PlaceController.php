@@ -7,6 +7,7 @@ use App\Models\Place;
 use App\Models\Photo;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,6 +17,10 @@ class PlaceController extends Controller
 {
     public function show(Trip $trip, Place $place)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         $place->load('photos');
 
         // Aggiungere il prefisso `/storage/` ai percorsi delle immagini
@@ -32,6 +37,10 @@ class PlaceController extends Controller
 
     public function destroy(Trip $trip, Place $place)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         if ($place->trip_id !== $trip->id) {
             return response()->json(['error' => 'Il posto non appartiene a questo viaggio'], 403);
         }
@@ -48,6 +57,10 @@ class PlaceController extends Controller
     
     public function edit(Trip $trip, Place $place)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         return Inertia::render('Trip/Place/Edit', [
             'trip' => $trip,
             'place' => $place,
@@ -56,6 +69,10 @@ class PlaceController extends Controller
     
     public function update(Request $request, Trip $trip, Place $place)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         if ($place->trip_id !== $trip->id) {
             abort(403, 'Accesso non autorizzato.');
         }
@@ -75,6 +92,10 @@ class PlaceController extends Controller
 
     public function uploadPhoto(Request $request, Trip $trip, Place $place)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         $request->validate([
             'files' => 'required|array', // Assicura che files sia un array
             'files.*' => 'mimes:jpeg,png,jpg,svg,webp,mp4,webm,ogg|max:102400' // Valida ogni file
@@ -109,6 +130,10 @@ class PlaceController extends Controller
 
     public function deletePhoto(Request $request, Trip $trip, Place $place, Photo $photo)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         if ($photo->place_id !== $place->id) {
             return back()->withErrors('Questa foto non appartiene al luogo selezionato.');
         }
@@ -121,6 +146,10 @@ class PlaceController extends Controller
 
     public function setFavoritePhoto(Request $request, Trip $trip, Photo $photo)
     {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
         if ($photo->place->trip_id !== $trip->id) {
             return back()->withErrors('Questa foto non appartiene al viaggio.');
         }
@@ -128,6 +157,29 @@ class PlaceController extends Controller
         $trip->update(['image' => $photo->path]);
 
         return back()->with('success', 'Immagine preferita impostata con successo!');
+    }
+
+    public function addPlace(Request $request, Trip $trip)
+    {
+        if (!$this->authorizeTrip($trip->id)) {
+            return Redirect::route('home');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
+
+        $place = new Place();
+        $place->trip_id = $trip->id;
+        $place->name = $request->name;
+        $place->lat = $request->lat;
+        $place->lng = $request->lng;
+        $place->save();
+
+        return redirect()->route('trip.show', $trip->id)->with('success', 'Luogo aggiunto con successo!');
     }
 
     private function compressImage($sourcePath, $destinationPath, $quality = 75, $maxWidth = 1920)
@@ -205,22 +257,14 @@ class PlaceController extends Controller
         return true;
     }
 
-    public function addPlace(Request $request, Trip $trip)
+    private function authorizeTrip(int $tripId)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-        ]);
+        $trip = Trip::find($tripId);
 
-        $place = new Place();
-        $place->trip_id = $trip->id;
-        $place->name = $request->name;
-        $place->lat = $request->lat;
-        $place->lng = $request->lng;
-        $place->save();
+        if (!$trip || $trip->user_id !== Auth::id()) {
+            return false;
+        }
 
-        return redirect()->route('trip.show', $trip->id)->with('success', 'Luogo aggiunto con successo!');
+        return true;
     }
 }

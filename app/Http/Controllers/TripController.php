@@ -121,6 +121,10 @@ class TripController extends Controller
         
     public function show(Trip $trip)
     {
+        if(!$this->authorizeTrip($trip->id)){
+            return Redirect::route('home');
+        }
+        
         $trip->image = $trip->image ? "/storage/{$trip->image}" : null;
 
         $trip->start_date = Carbon::parse($trip->start_date)->format('d/m/Y');
