@@ -75,6 +75,7 @@ class TripController extends Controller
                 'lng' => $placeData['lng'],
             ]);
 
+            /*
             if (!empty($placeData['photos'])) {
                 foreach ($placeData['photos'] as $photo) {
                     $extension = $photo->getClientOriginalExtension();
@@ -99,6 +100,7 @@ class TripController extends Controller
                     $place->photos()->create(['path' => $relativePath]);
                 }
             }
+            */
         }
 
         if ($favoriteImagePath) {
