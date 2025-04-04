@@ -1,11 +1,14 @@
 <script setup>
+import AppLayout from '@/Layouts/AppLayout.vue';
+
+import EditHashtag from '@/Components/Trip/Place/EditHashtag.vue'
+
 import { ref, onMounted, computed } from 'vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import { Loader } from '@googlemaps/js-api-loader';
 import { EyeSlashIcon, StarIcon, TrashIcon, ArrowUpTrayIcon, XMarkIcon  } from '@heroicons/vue/24/solid';
-import AppLayout from '@/Layouts/AppLayout.vue';
 
-const props = defineProps(['trip', 'place']);
+const props = defineProps(['trip', 'place', 'availableHashtags']);
 const page = usePage();
 
 const map = ref(null);
@@ -180,6 +183,13 @@ onMounted(() => {
 
             <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
 
+            <EditHashtag
+                :trip-id="props.trip.id"
+                :place-id="props.place.id"
+                :available-hashtags="props.availableHashtags"
+                :selected-hashtags="props.place.hashtags"
+            />
+            
             <div class="my-6">
                 <h2 class="text-2xl font-bold text-gray-700">Carica fino a 30 file!</h2>
                 <label :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded flex items-center cursor-pointer hover:bg-${$colorScheme}-600 mt-3`">

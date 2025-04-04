@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hashtag;
 use App\Models\Trip;
 use App\Models\Place;
 use App\Models\Photo;
@@ -29,9 +30,12 @@ class PlaceController extends Controller
             return $photo;
         });
 
+        $availableHashtags = Hashtag::all();
+
         return Inertia::render('Trip/Place/Show', [
             'trip' => $trip,
-            'place' => $place
+            'place' => $place,
+            'availableHashtags' => $availableHashtags,
         ]);
     }
 
