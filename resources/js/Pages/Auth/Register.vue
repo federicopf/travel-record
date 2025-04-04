@@ -107,12 +107,12 @@
             </h1>
 
             <p class="text-gray-500 text-center mb-6">
-                {{ step === 1 ? 'Scegli il tipo di registrazione' : 'Completa la registrazione' }}
+                {{ step === 1 ? '' : 'Completa la registrazione' }}
             </p>
 
             <form @submit.prevent="submitForm" @keydown.enter.prevent="handleEnterPress">
                 <div v-if="step === 1">
-                    <div class="mb-4">
+                    <div class="mb-4 hidden">
                         <label class="block text-gray-700 font-semibold">Tipo di registrazione</label>
                         <div class="flex gap-4 mt-2">
                             <button 
