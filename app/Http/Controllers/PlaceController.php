@@ -23,6 +23,7 @@ class PlaceController extends Controller
         }
 
         $place->load('photos');
+        $place->load('hashtags');
 
         // Aggiungere il prefisso `/storage/` ai percorsi delle immagini
         $place->photos->transform(function ($photo) {
