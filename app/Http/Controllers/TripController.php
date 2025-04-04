@@ -17,7 +17,7 @@ class TripController extends Controller
 {
     public function index()
     {
-        $trips = Trip::with(['places.photos'])
+        $trips = Trip::with(['places.photos','places.hashtags'])
             ->where('user_id', Auth::id())
             ->orderBy('start_date', 'desc') 
             ->get();
@@ -131,6 +131,8 @@ class TripController extends Controller
 
         $trip->start_date = Carbon::parse($trip->start_date)->format('d/m/Y');
         $trip->end_date = Carbon::parse($trip->end_date)->format('d/m/Y');
+
+        $trip->load(['places.hashtags', 'places.photos']);
 
         $trip->places->transform(function ($place) {
             $filteredPhotos = collect($place->photos)->filter(function ($photo) {

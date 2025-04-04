@@ -177,6 +177,16 @@ onMounted(() => {
                     <div class="p-4">
                         <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
                         <p class="text-gray-600 text-sm mt-1">{{ place.address }}</p>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                            <span
+                                v-for="hashtag in place.hashtags"
+                                :key="hashtag.id"
+                                :style="{ backgroundColor: hashtag.color }"
+                                class="text-xs text-white px-2 py-1 rounded-full"
+                                >
+                                #{{ hashtag.name }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
