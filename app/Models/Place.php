@@ -17,4 +17,9 @@ class Place extends Model {
     public function photos() {
         return $this->hasMany(Photo::class);
     }
+
+    public function hashtags()
+    {
+        return $this->belongsToMany(Hashtag::class, 'hashtag_places');
+    }
 }
