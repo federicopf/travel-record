@@ -1,4 +1,7 @@
 <script setup>
+
+import TripHashtagSummary from '@/Components/Trip/TripHashtagSummary.vue'
+
 import { ref, onMounted, computed } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
@@ -154,6 +157,8 @@ onMounted(() => {
 
             <!-- Mappa -->
             <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
+
+            <TripHashtagSummary :places="trip.places" />
 
             <!-- Luoghi visitati -->
             <h2 class="text-2xl font-bold text-gray-700 mt-6 mb-4">Luoghi visitati</h2>
