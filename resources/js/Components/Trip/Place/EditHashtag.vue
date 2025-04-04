@@ -5,28 +5,39 @@ import { useForm } from '@inertiajs/vue3'
 const props = defineProps({
     tripId: Number,
     placeId: Number,
-    availableHashtags: Array,
-    selectedHashtags: Array
+    availableHashtags: {
+        type: Array,
+        default: () => []
+    },
+    selectedHashtags: {
+        type: Array,
+        default: () => []
+    }
 })
 
 const form = useForm({
-    hashtags: [...(props.selectedHashtags ?? []).map(h => h.id)]
+    hashtags: [...props.selectedHashtags.map(h => h.id)]
 })
 
 const toggleHashtag = (hashtagId) => {
     const index = form.hashtags.indexOf(hashtagId)
+
     if (index !== -1) {
         form.hashtags.splice(index, 1)
     } else {
         form.hashtags.push(hashtagId)
     }
-}
 
-const save = () => {
     form.post(route('trip.place.hashtags.update', {
         trip: props.tripId,
         place: props.placeId
-    }))
+    }), {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => {
+            console.log('Hashtag aggiornati')
+        }
+    })
 }
 </script>
 
@@ -45,12 +56,5 @@ const save = () => {
                 #{{ hashtag.name }}
             </button>
         </div>
-
-        <button
-            @click="save"
-            class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-            Salva Hashtag
-        </button>
     </div>
 </template>

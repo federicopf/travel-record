@@ -37,6 +37,8 @@ Route::middleware([AuthenticateUser::class])->group(function () {
 
                 Route::post('/photo', [PlaceController::class, 'uploadPhoto'])->name('trip.place.photo.upload');
                 Route::delete('/photo/{photo}', [PlaceController::class, 'deletePhoto'])->name('trip.place.photo.delete');
+                
+                Route::post('/hashtags', [PlaceController::class, 'updateHashtags'])->name('trip.place.hashtags.update');
             });
         
             Route::post('place/{photo}/set-favorite', [PlaceController::class, 'setFavoritePhoto'])->name('trip.place.setFavorite');

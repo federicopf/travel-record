@@ -186,6 +186,22 @@ class PlaceController extends Controller
         return redirect()->route('trip.show', $trip->id)->with('success', 'Luogo aggiunto con successo!');
     }
 
+    public function updateHashtags(Request $request, Trip $trip, Place $place)
+    {
+        if (!$this->authorizeTrip($trip->id)) {
+            return redirect()->route('home');
+        }
+
+        $validated = $request->validate([
+            'hashtags' => ['array'],
+            'hashtags.*' => ['exists:hashtags,id']
+        ]);
+
+        $place->hashtags()->sync($validated['hashtags'] ?? []);
+
+        return back()->with('success', 'Hashtag aggiornati con successo.');
+    }
+
     private function compressImage($sourcePath, $destinationPath, $quality = 75, $maxWidth = 1920)
     {
         // Crea la cartella di destinazione se non esiste
