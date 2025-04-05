@@ -3,6 +3,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from 'ziggy-js';
 import { Ziggy } from './ziggy';
 import '../css/app.css';
+import moment from 'moment'
+import 'moment/locale/it'
 
 createInertiaApp({
     resolve: name => {
@@ -23,3 +25,7 @@ createInertiaApp({
            .mount(el);
     },
 });
+
+moment.locale('it')
+
+window.moment = moment
