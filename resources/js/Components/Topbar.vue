@@ -71,6 +71,7 @@ const changeTheme = () => {
                 <Link :href="route('home')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Home</Link>
                 <Link :href="route('map')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Mappa</Link>
                 <Link :href="route('map')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Amici</Link>
+                <Link :href="route('profile.index', { user: user.id })" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Profilo</Link>
             </nav>
 
             <div class="flex items-center space-x-4">
@@ -120,6 +121,7 @@ const changeTheme = () => {
                 <Link :href="route('home')" class="text-white text-lg font-semibold hover:text-gray-300">Home</Link>
                 <Link :href="route('map')" class="text-white text-lg font-semibold hover:text-gray-300">Mappa</Link>
                 <Link :href="route('map')" class="text-white text-lg font-semibold hover:text-gray-300">Amici</Link>
+                <Link :href="route('profile.index', { user: user.id })" class="text-white text-lg font-semibold hover:text-gray-300">Profilo</Link>
             </nav>
         </div>
     </header>
