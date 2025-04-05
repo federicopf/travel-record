@@ -43,7 +43,11 @@ const showPrivacyForm = ref(false)
           </p>
         </div>
 
-        <EditName v-if="showNameForm" :current-name="user.name" />
+        <EditName
+          v-if="showNameForm"
+          :current-name="user.name"
+          @close="showNameForm = false"
+        />      
       </div>
 
       <!-- Sezione username -->

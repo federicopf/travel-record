@@ -59,6 +59,9 @@ Route::middleware([AuthenticateUser::class])->group(function () {
         Route::prefix('/user/{user}/')->group(function () {
             Route::prefix('profile/')->group(function () {
                 Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
+                Route::put('/name', [ProfileController::class, 'updateName'])->name('profile.update.name');
+                Route::put('/password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
+                Route::put('/privacy', [ProfileController::class, 'updatePrivacy'])->name('profile.update.privacy');
             });
         });
     });
