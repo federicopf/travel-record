@@ -1,28 +1,17 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({ privateProfile: Boolean })
 const isPrivate = ref(props.privateProfile)
 
-const save = () => {
-  alert(`Profilo aggiornato come: ${isPrivate.value ? 'Privato' : 'Pubblico'}`)
-}
+watch(isPrivate, (val) => {
+  alert(`Profilo aggiornato come: ${val ? 'Privato' : 'Pubblico'}`)
+})
 </script>
 
 <template>
-  <div class="border rounded p-4 shadow bg-white space-y-2">
-    <h3 class="text-lg font-semibold text-gray-700">Impostazioni privacy</h3>
-
-    <label class="flex items-center gap-2">
-      <input type="checkbox" v-model="isPrivate" />
-      <span>Profilo privato (richiede approvazione per essere seguito)</span>
-    </label>
-
-    <button
-      @click="save"
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-    >
-      Salva
-    </button>
-  </div>
+  <label class="flex items-center gap-2 p-2 bg-gray-100 rounded">
+    <input type="checkbox" v-model="isPrivate" class="accent-blue-600" />
+    <span class="text-sm text-gray-700">Attiva profilo privato</span>
+  </label>
 </template>
