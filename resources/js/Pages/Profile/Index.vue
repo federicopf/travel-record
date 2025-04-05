@@ -82,7 +82,10 @@ const showPrivacyForm = ref(false)
         </div>
         <p class="text-gray-600 text-sm">Mantieni la tua password al sicuro.</p>
 
-        <EditPassword v-if="showPasswordForm" />
+        <EditPassword 
+          v-if="showPasswordForm" 
+          @close="showPasswordForm = false"
+        />
       </div>
 
       <!-- Visibilità profilo -->
