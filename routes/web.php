@@ -5,10 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\ThemeController;
 
 use App\Http\Middleware\AuthenticateUser;
+use App\Http\Middleware\EnsureUserIsSelf;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -52,4 +54,12 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     Route::post('/change-map-pointer', [ThemeController::class, 'changeMapPointer'])->name('map-pointer.change');
 
     Route::get('/map', [MapController::class, 'index'])->name('map');
+
+    Route::middleware([EnsureUserIsSelf::class])->group(function () {
+        Route::prefix('/user/{user}/')->group(function () {
+            Route::prefix('profile/')->group(function () {
+                Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
+            });
+        });
+    });
 });

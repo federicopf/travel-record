@@ -68,8 +68,9 @@ const changeTheme = () => {
     <header :class="`bg-gradient-to-r from-${$colorScheme}-400 to-${$colorScheme}-600 text-white shadow-md`">
         <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
             <nav class="hidden md:flex items-center space-x-8">
-                <Link :href="route('home')" class="text-lg font-semibold hover:text-gray-200 transition">Home</Link>
+                <Link :href="route('home')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Home</Link>
                 <Link :href="route('map')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Mappa</Link>
+                <Link :href="route('map')" class="text-lg font-semibold hover:text-gray-200 transition cursor-pointer">Amici</Link>
             </nav>
 
             <div class="flex items-center space-x-4">
@@ -118,6 +119,7 @@ const changeTheme = () => {
             <nav class="flex flex-col space-y-2 px-6">
                 <Link :href="route('home')" class="text-white text-lg font-semibold hover:text-gray-300">Home</Link>
                 <Link :href="route('map')" class="text-white text-lg font-semibold hover:text-gray-300">Mappa</Link>
+                <Link :href="route('map')" class="text-white text-lg font-semibold hover:text-gray-300">Amici</Link>
             </nav>
         </div>
     </header>
