@@ -5,7 +5,8 @@ import { ref } from 'vue'
 import axios from 'axios'
 
 const props = defineProps({
-  friends: Array
+  friends: Array,
+  requests_count: Number
 })
 
 const sendingRequest = ref(null)
@@ -16,7 +17,6 @@ const cancelFollow = async (userId) => {
   try {
     await axios.delete(route('friends.unfollow', userId))
 
-    // Rimuove l'amico dalla lista dopo l'annullamento
     const index = props.friends.findIndex(user => user.id === userId)
     if (index !== -1) {
       props.friends.splice(index, 1)
@@ -36,12 +36,22 @@ const cancelFollow = async (userId) => {
     <div class="max-w-4xl mx-auto px-6 py-8">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">I tuoi amici</h1>
-        <Link
-          :href="route('friends.search')"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Cerca amici
-        </Link>
+        <div class="flex gap-3">
+          <Link
+            :href="route('friends.search')"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm"
+          >
+            Cerca amici
+          </Link>
+          <Link
+            class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition text-sm"
+          >
+            Vedi richieste
+            <span v-if="requests_count > 0" class="ml-1 bg-white text-orange-600 rounded-full px-2 text-xs font-bold">
+              {{ requests_count }}
+            </span>
+          </Link>
+        </div>
       </div>
 
       <div v-if="friends.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

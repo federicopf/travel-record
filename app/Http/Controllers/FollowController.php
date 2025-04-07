@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,13 +15,20 @@ class FollowController extends Controller
     {
         $user = Auth::user();
 
-        // Recupera tutti gli utenti che l'utente corrente segue con status "accepted"
+        // Recupera gli utenti seguiti con status "accepted"
         $friends = $user->following()->get();
 
+        // Conta le richieste di follow ricevute (status pending)
+        $requestsCount = Follow::where('followed_id', $user->id)
+            ->where('status', 'pending')
+            ->count();
+
         return Inertia::render('Friends/Index', [
-            'friends' => $friends
+            'friends' => $friends,
+            'requests_count' => $requestsCount,
         ]);
     }
+
 
     public function search(Request $request)
     {
