@@ -1,10 +1,34 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
   friends: Array
 })
+
+const sendingRequest = ref(null)
+const feedbacks = ref({}) // userId: string
+
+const cancelFollow = async (userId) => {
+  sendingRequest.value = userId
+  try {
+    await axios.delete(route('friends.unfollow', userId))
+
+    // Rimuove l'amico dalla lista dopo l'annullamento
+    const index = props.friends.findIndex(user => user.id === userId)
+    if (index !== -1) {
+      props.friends.splice(index, 1)
+      feedbacks.value[userId] = 'Follow rimosso'
+      setTimeout(() => delete feedbacks.value[userId], 3000)
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    sendingRequest.value = null
+  }
+}
 </script>
 
 <template>
@@ -24,15 +48,25 @@ const props = defineProps({
         <div
           v-for="friend in friends"
           :key="friend.id"
-          class="bg-white shadow rounded-lg p-4 text-center"
+          class="bg-white shadow rounded-lg p-4 text-center relative"
         >
-          <img
-            :src="friend.map_pointer_url ?? 'https://via.placeholder.com/80'"
-            alt="Avatar"
-            class="w-20 h-20 rounded-full mx-auto mb-3 object-cover"
-          />
           <h2 class="text-lg font-semibold text-gray-800">{{ friend.name }}</h2>
           <p class="text-sm text-gray-500">@{{ friend.username }}</p>
+
+          <button
+            @click="cancelFollow(friend.id)"
+            :disabled="sendingRequest === friend.id"
+            class="mt-2 text-sm text-red-600 underline hover:text-red-800"
+          >
+            {{ sendingRequest === friend.id ? '...' : 'Togli follow' }}
+          </button>
+
+          <p
+            v-if="feedbacks[friend.id]"
+            class="text-xs text-green-600 mt-1"
+          >
+            {{ feedbacks[friend.id] }}
+          </p>
         </div>
       </div>
 
