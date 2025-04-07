@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { router, Link  } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import axios from 'axios'
 
@@ -68,6 +68,15 @@ const cancelFollow = async (userId) => {
   <AppLayout>
     <div class="max-w-4xl mx-auto px-6 py-8">
       <h1 class="text-3xl font-bold text-gray-800 mb-6">Cerca utenti</h1>
+
+      <div class="mb-4">
+        <Link
+          :href="route('friends.index')"
+          class="inline-block text-sm text-gray-700 underline hover:text-gray-900"
+        >
+          ← Torna alla lista amici
+        </Link>
+      </div>
 
       <div class="mb-6">
         <input
