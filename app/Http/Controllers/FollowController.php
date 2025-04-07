@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Follow;
 use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,6 @@ class FollowController extends Controller
             'requests_count' => $requestsCount,
         ]);
     }
-
 
     public function search(Request $request)
     {
@@ -59,6 +59,24 @@ class FollowController extends Controller
         return Inertia::render('Friends/Search', [
             'query' => $q,
             'results' => $results,
+        ]);
+    }
+
+    public function requests()
+    {
+        $user = auth()->user();
+
+        // Trova tutte le richieste in attesa ricevute dall'utente loggato
+        $requests = Follow::where('followed_id', $user->id)
+            ->where('status', 'pending')
+            ->with('follower') // eager load per recuperare i dati dell'utente che ha fatto la richiesta
+            ->get()
+            ->map(function ($follow) {
+                return $follow->follower;
+            });
+
+        return Inertia::render('Friends/Requests', [
+            'requests' => $requests
         ]);
     }
 

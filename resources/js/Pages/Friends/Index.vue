@@ -44,6 +44,7 @@ const cancelFollow = async (userId) => {
             Cerca amici
           </Link>
           <Link
+            :href="route('friends.requests')"
             class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition text-sm"
           >
             Vedi richieste
