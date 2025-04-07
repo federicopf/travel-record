@@ -11,7 +11,6 @@ const props = defineProps({
 
 const search = ref(props.query ?? '')
 let debounceTimer = null
-
 const sendingRequest = ref(null)
 
 watch(search, (value) => {
@@ -34,22 +33,16 @@ const sendFollowRequest = async (userId) => {
     const response = await axios.post(route('friends.follow', userId))
     const status = response.data.status
 
-    // Trova l'utente nella lista e aggiorna is_following
     const index = props.results.findIndex(user => user.id === userId)
     if (index !== -1) {
-      props.results[index].is_following = true
+      props.results[index].status = status
     }
-
-    alert(status === 'accepted'
-      ? 'Ora segui questo utente!'
-      : 'Richiesta inviata con successo!')
   } catch (error) {
-    alert(error.response?.data?.error ?? 'Errore durante l’invio della richiesta.')
+    console.error(error.response?.data?.error ?? 'Errore durante l’invio della richiesta.')
   } finally {
     sendingRequest.value = null
   }
 }
-
 </script>
 
 <template>
@@ -77,10 +70,16 @@ const sendFollowRequest = async (userId) => {
 
           <div class="mt-2">
             <span
-              v-if="user.is_following"
+              v-if="user.status === 'accepted'"
               class="inline-block text-green-600 text-sm font-medium"
             >
               Già seguito
+            </span>
+            <span
+              v-else-if="user.status === 'pending'"
+              class="inline-block text-yellow-600 text-sm font-medium"
+            >
+              Richiesta in attesa
             </span>
             <button
               v-else

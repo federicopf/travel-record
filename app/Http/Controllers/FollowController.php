@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class FollowController extends Controller
@@ -35,9 +36,16 @@ class FollowController extends Controller
                 ->take(3)
                 ->get()
                 ->map(function ($u) use ($user) {
-                    $u->is_following = $user->isFollowing($u);
+                    $follow = DB::table('follows')
+                        ->where('follower_id', $user->id)
+                        ->where('followed_id', $u->id)
+                        ->first();
+
+                    $u->status = $follow->status ?? null;
+
                     return $u;
                 });
+
         }
 
         return Inertia::render('Friends/Search', [
