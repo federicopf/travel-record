@@ -79,10 +79,12 @@ class FollowController extends Controller
     {
         $authUser = auth()->user();
 
-        $authUser->following()->detach($user->id);
+        DB::table('follows')
+            ->where('follower_id', $authUser->id)
+            ->where('followed_id', $user->id)
+            ->delete();
 
         return response()->json(['status' => 'removed']);
     }
-
 
 }
