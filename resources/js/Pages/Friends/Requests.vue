@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref } from 'vue'
+import { Link } from '@inertiajs/vue3'
 import axios from 'axios'
 
 const props = defineProps({
@@ -16,16 +17,20 @@ const acceptRequest = async (userId) => {
 
   try {
     await axios.put(route('friends.accept', userId))
-    feedbacks.value[userId] = 'Richiesta accettata!'
-    
-    // Rimuovi l'utente dalla lista dopo l'accettazione
+
     const index = props.requests.findIndex(user => user.id === userId)
-    if (index !== -1) props.requests.splice(index, 1)
+    if (index !== -1) {
+      feedbacks.value[userId] = 'Richiesta accettata!'
+      setTimeout(() => {
+        props.requests.splice(index, 1)
+        delete feedbacks.value[userId]
+      }, 3000)
+    }
   } catch (e) {
     feedbacks.value[userId] = 'Errore durante l’accettazione.'
+    setTimeout(() => delete feedbacks.value[userId], 3000)
   } finally {
     accepting.value = null
-    setTimeout(() => delete feedbacks.value[userId], 3000)
   }
 }
 
@@ -34,16 +39,20 @@ const rejectRequest = async (userId) => {
 
   try {
     await axios.delete(route('friends.reject', userId))
-    feedbacks.value[userId] = 'Richiesta rifiutata.'
 
-    // Rimuovi l'utente dalla lista dopo il rifiuto
     const index = props.requests.findIndex(user => user.id === userId)
-    if (index !== -1) props.requests.splice(index, 1)
+    if (index !== -1) {
+      feedbacks.value[userId] = 'Richiesta rifiutata.'
+      setTimeout(() => {
+        props.requests.splice(index, 1)
+        delete feedbacks.value[userId]
+      }, 3000)
+    }
   } catch (e) {
     feedbacks.value[userId] = 'Errore durante il rifiuto.'
+    setTimeout(() => delete feedbacks.value[userId], 3000)
   } finally {
     rejecting.value = null
-    setTimeout(() => delete feedbacks.value[userId], 3000)
   }
 }
 </script>
@@ -51,7 +60,17 @@ const rejectRequest = async (userId) => {
 <template>
   <AppLayout>
     <div class="max-w-4xl mx-auto px-6 py-8">
+
       <h1 class="text-3xl font-bold text-gray-800 mb-6">Richieste di amicizia</h1>
+      
+      <div class="mb-4">
+        <Link
+          :href="route('friends.index')"
+          class="inline-block text-sm text-gray-700 underline hover:text-gray-900"
+        >
+          ← Torna alla lista amici
+        </Link>
+      </div>
 
       <div v-if="requests.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
