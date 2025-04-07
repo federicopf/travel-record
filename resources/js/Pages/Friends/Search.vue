@@ -10,8 +10,10 @@ const props = defineProps({
 })
 
 const search = ref(props.query ?? '')
-let debounceTimer = null
 const sendingRequest = ref(null)
+const feedbacks = ref({}) // userId: string
+
+let debounceTimer = null
 
 watch(search, (value) => {
   clearTimeout(debounceTimer)
@@ -28,7 +30,6 @@ watch(search, (value) => {
 
 const sendFollowRequest = async (userId) => {
   sendingRequest.value = userId
-
   try {
     const response = await axios.post(route('friends.follow', userId))
     const status = response.data.status
@@ -38,7 +39,25 @@ const sendFollowRequest = async (userId) => {
       props.results[index].status = status
     }
   } catch (error) {
-    console.error(error.response?.data?.error ?? 'Errore durante l’invio della richiesta.')
+    console.error(error)
+  } finally {
+    sendingRequest.value = null
+  }
+}
+
+const cancelFollow = async (userId) => {
+  sendingRequest.value = userId
+  try {
+    await axios.delete(route('friends.unfollow', userId))
+
+    const index = props.results.findIndex(user => user.id === userId)
+    if (index !== -1) {
+      props.results[index].status = null
+      feedbacks.value[userId] = 'Follow annullato'
+      setTimeout(() => delete feedbacks.value[userId], 3000)
+    }
+  } catch (error) {
+    console.error(error)
   } finally {
     sendingRequest.value = null
   }
@@ -63,24 +82,30 @@ const sendFollowRequest = async (userId) => {
         <div
           v-for="user in results"
           :key="user.id"
-          class="bg-white shadow rounded-lg p-4 text-center"
+          class="bg-white shadow rounded-lg p-4 text-center relative"
         >
           <h2 class="text-lg font-semibold text-gray-800">{{ user.name }}</h2>
           <p class="text-sm text-gray-500">@{{ user.username }}</p>
 
-          <div class="mt-2">
-            <span
+          <div class="mt-3 space-y-1">
+            <button
               v-if="user.status === 'accepted'"
-              class="inline-block text-green-600 text-sm font-medium"
+              @click="cancelFollow(user.id)"
+              :disabled="sendingRequest === user.id"
+              class="text-sm text-red-600 underline hover:text-red-800"
             >
-              Già seguito
-            </span>
-            <span
+              {{ sendingRequest === user.id ? '...' : 'Togli follow' }}
+            </button>
+
+            <button
               v-else-if="user.status === 'pending'"
-              class="inline-block text-yellow-600 text-sm font-medium"
+              @click="cancelFollow(user.id)"
+              :disabled="sendingRequest === user.id"
+              class="text-sm text-orange-600 underline hover:text-orange-800"
             >
-              Richiesta in attesa
-            </span>
+              {{ sendingRequest === user.id ? '...' : 'Annulla richiesta' }}
+            </button>
+
             <button
               v-else
               @click="sendFollowRequest(user.id)"
@@ -89,6 +114,13 @@ const sendFollowRequest = async (userId) => {
             >
               {{ sendingRequest === user.id ? '...' : 'Segui' }}
             </button>
+
+            <p
+              v-if="feedbacks[user.id]"
+              class="text-xs text-green-600 mt-1"
+            >
+              {{ feedbacks[user.id] }}
+            </p>
           </div>
         </div>
       </div>

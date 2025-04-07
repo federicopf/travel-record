@@ -58,6 +58,7 @@ Route::middleware([AuthenticateUser::class])->group(function () {
         Route::get('/', [FollowController::class, 'index'])->name('friends.index');
         Route::get('/search', [FollowController::class, 'search'])->name('friends.search');
         Route::post('/follow/{user}', [FollowController::class, 'follow'])->name('friends.follow');
+        Route::post('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('friends.unfollow');
     });
 
     //PROFILE
