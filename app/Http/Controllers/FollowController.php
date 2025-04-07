@@ -46,5 +46,25 @@ class FollowController extends Controller
         ]);
     }
 
+    public function follow(Request $request, User $user)
+    {
+        $currentUser = Auth::user();
+
+        if ($currentUser->id === $user->id) {
+            return response()->json(['error' => 'Non puoi seguire te stesso.'], 400);
+        }
+
+        $already = $currentUser->following()->where('followed_id', $user->id)->first();
+
+        if ($already) {
+            return response()->json(['error' => 'Richiesta già inviata o utente già seguito.'], 400);
+        }
+
+        $status = $user->private_profile ? 'pending' : 'accepted';
+
+        $currentUser->following()->attach($user->id, ['status' => $status]);
+
+        return response()->json(['success' => true, 'status' => $status]);
+    }
 
 }

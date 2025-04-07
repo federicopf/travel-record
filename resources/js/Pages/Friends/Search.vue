@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import axios from 'axios'
 
 const props = defineProps({
   query: String,
@@ -10,6 +11,8 @@ const props = defineProps({
 
 const search = ref(props.query ?? '')
 let debounceTimer = null
+
+const sendingRequest = ref(null)
 
 watch(search, (value) => {
   clearTimeout(debounceTimer)
@@ -23,6 +26,30 @@ watch(search, (value) => {
     }
   }, 500)
 })
+
+const sendFollowRequest = async (userId) => {
+  sendingRequest.value = userId
+
+  try {
+    const response = await axios.post(route('friends.follow', userId))
+    const status = response.data.status
+
+    // Trova l'utente nella lista e aggiorna is_following
+    const index = props.results.findIndex(user => user.id === userId)
+    if (index !== -1) {
+      props.results[index].is_following = true
+    }
+
+    alert(status === 'accepted'
+      ? 'Ora segui questo utente!'
+      : 'Richiesta inviata con successo!')
+  } catch (error) {
+    alert(error.response?.data?.error ?? 'Errore durante l’invio della richiesta.')
+  } finally {
+    sendingRequest.value = null
+  }
+}
+
 </script>
 
 <template>
@@ -57,9 +84,11 @@ watch(search, (value) => {
             </span>
             <button
               v-else
+              @click="sendFollowRequest(user.id)"
+              :disabled="sendingRequest === user.id"
               class="text-sm text-blue-600 underline hover:text-blue-800"
             >
-              Segui
+              {{ sendingRequest === user.id ? '...' : 'Segui' }}
             </button>
           </div>
         </div>
