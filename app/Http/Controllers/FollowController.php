@@ -80,6 +80,32 @@ class FollowController extends Controller
         ]);
     }
 
+    public function accept(User $user)
+    {
+        $authUser = Auth::user();
+
+        $follow = Follow::where('follower_id', $user->id)
+            ->where('followed_id', $authUser->id)
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        $follow->update(['status' => 'accepted']);
+
+        return response()->json(['status' => 'accepted']);
+    }
+
+    public function reject(User $user)
+    {
+        $authUser = Auth::user();
+
+        Follow::where('follower_id', $user->id)
+            ->where('followed_id', $authUser->id)
+            ->where('status', 'pending')
+            ->delete();
+
+        return response()->json(['status' => 'rejected']);
+    }
+
     public function follow(Request $request, User $user)
     {
         $currentUser = Auth::user();

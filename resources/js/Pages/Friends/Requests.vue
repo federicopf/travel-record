@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
   requests: Array
@@ -10,24 +11,40 @@ const accepting = ref(null)
 const rejecting = ref(null)
 const feedbacks = ref({}) // userId: message
 
-const acceptRequest = (userId) => {
+const acceptRequest = async (userId) => {
   accepting.value = userId
 
-  // Simulazione di accettazione (collegare poi al backend)
-  setTimeout(() => {
+  try {
+    await axios.put(route('friends.accept', userId))
     feedbacks.value[userId] = 'Richiesta accettata!'
+    
+    // Rimuovi l'utente dalla lista dopo l'accettazione
+    const index = props.requests.findIndex(user => user.id === userId)
+    if (index !== -1) props.requests.splice(index, 1)
+  } catch (e) {
+    feedbacks.value[userId] = 'Errore durante l’accettazione.'
+  } finally {
     accepting.value = null
-  }, 800)
+    setTimeout(() => delete feedbacks.value[userId], 3000)
+  }
 }
 
-const rejectRequest = (userId) => {
+const rejectRequest = async (userId) => {
   rejecting.value = userId
 
-  // Simulazione di rifiuto (collegare poi al backend)
-  setTimeout(() => {
+  try {
+    await axios.delete(route('friends.reject', userId))
     feedbacks.value[userId] = 'Richiesta rifiutata.'
+
+    // Rimuovi l'utente dalla lista dopo il rifiuto
+    const index = props.requests.findIndex(user => user.id === userId)
+    if (index !== -1) props.requests.splice(index, 1)
+  } catch (e) {
+    feedbacks.value[userId] = 'Errore durante il rifiuto.'
+  } finally {
     rejecting.value = null
-  }, 800)
+    setTimeout(() => delete feedbacks.value[userId], 3000)
+  }
 }
 </script>
 
