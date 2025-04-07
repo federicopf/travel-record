@@ -64,18 +64,35 @@ class User extends Authenticatable
 
     public function following()
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')
+                    ->withTimestamps()
+                    ->wherePivot('status', 'accepted');
     }
 
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')
+                    ->withTimestamps()
+                    ->wherePivot('status', 'accepted');
+    }
+
+    public function followRequests()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')
+                    ->withTimestamps()
+                    ->wherePivot('status', 'pending');
     }
 
     public function isFollowing(User $user)
     {
-        return $this->following()->where('followed_id', $user->id)->exists();
+        return $this->following()->where('users.id', $user->id)->exists();
     }
+
+    public function hasRequestedToFollow(User $user)
+    {
+        return $this->followRequests()->where('users.id', $user->id)->exists();
+    }
+
 
 
 }
