@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TripController;
@@ -20,11 +21,12 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 Route::middleware([AuthenticateUser::class])->group(function () {
+    //TRIP
     Route::get('/', [TripController::class, 'index'])->name('home');
     Route::get('/new-trip', [TripController::class, 'create'])->name('new-trip');
     Route::post('/new-trip', [TripController::class, 'store'])->name('new-trip.store');
 
-    Route::prefix('trip/{trip}')->group(function () {
+    Route::prefix('trip/{trip}/')->group(function () {
         Route::get('/', [TripController::class, 'show'])->name('trip.show');
         Route::get('/edit', [TripController::class, 'edit'])->name('trip.edit');
         Route::post('/', [TripController::class, 'update'])->name('trip.update');
@@ -48,13 +50,16 @@ Route::middleware([AuthenticateUser::class])->group(function () {
         });
     });    
 
-    Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
-
-    Route::post('/change-theme', [ThemeController::class, 'change'])->name('theme.change');
-    Route::post('/change-map-pointer', [ThemeController::class, 'changeMapPointer'])->name('map-pointer.change');
-
+    //MAP
     Route::get('/map', [MapController::class, 'index'])->name('map');
 
+    //FRIENDS
+    Route::prefix('friends')->group(function () {
+        Route::get('/', [FollowController::class, 'index'])->name('friends.index');
+        Route::get('/search', [FollowController::class, 'search'])->name('friends.search');
+    });
+
+    //PROFILE
     Route::middleware([EnsureUserIsSelf::class])->group(function () {
         Route::prefix('/user/{user}/')->group(function () {
             Route::prefix('profile/')->group(function () {
@@ -65,4 +70,10 @@ Route::middleware([AuthenticateUser::class])->group(function () {
             });
         });
     });
+
+    //UTILIIES
+    Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
+
+    Route::post('/change-theme', [ThemeController::class, 'change'])->name('theme.change');
+    Route::post('/change-map-pointer', [ThemeController::class, 'changeMapPointer'])->name('map-pointer.change');
 });
