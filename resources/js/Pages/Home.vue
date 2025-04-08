@@ -74,7 +74,12 @@ onMounted(() => {
                         Nessuna immagine per questo viaggio! Male...
                     </p>
 
-                    <div class="p-4 pb-2">
+                    <div :class="`p-4 pb-2 bg-${$colorScheme}-50`">
+                        <h2 :class="`text-xl font-semibold text-${$colorScheme}-700`">{{ trip.title }}</h2>
+                        <p :class="`text-sm text-${$colorScheme}-500 italic`">{{ trip.start_date }} - {{ trip.end_date }}</p>
+                    </div>
+                    
+                    <div class="p-4 pt-0">
                         <div class="flex flex-wrap gap-1 mt-2">
                             <span
                                 v-for="hashtag in trip.hashtags"
@@ -85,11 +90,6 @@ onMounted(() => {
                                 #{{ hashtag.name }}
                             </span>
                         </div>
-                    </div>
-
-                    <div :class="`p-4 pt-0 bg-${$colorScheme}-50`">
-                        <h2 :class="`text-xl font-semibold text-${$colorScheme}-700`">{{ trip.title }}</h2>
-                        <p :class="`text-sm text-${$colorScheme}-500 italic`">{{ trip.start_date }} - {{ trip.end_date }}</p>
                     </div>
                 </Link>
             </div>
