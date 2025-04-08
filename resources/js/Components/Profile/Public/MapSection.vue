@@ -13,9 +13,8 @@ const infoWindow = ref(null)
 const markers = ref([])
 
 const userPointerUrl = computed(() => {
-    return usePage().user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
+    return usePage().props.auth?.user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
 });
-
 
 const initializeMap = async () => {
   await nextTick()
