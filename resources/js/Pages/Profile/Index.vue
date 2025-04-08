@@ -22,10 +22,20 @@ const showPrivacyForm = ref(false)
 <template>
   <AppLayout>
     <div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">Profilo utente</h1>
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-3xl font-bold text-gray-800">Profilo utente</h1>
+        <button
+          class="text-sm text-blue-600 underline hover:text-blue-800 transition"
+          @click.prevent
+        >
+          Vedi preview del tuo profilo
+        </button>
+      </div>
       <p class="text-sm text-gray-500">
         Ultimo aggiornamento: {{ moment(user.updated_at).format('DD/MM/YYYY [alle] HH:mm') }}
       </p>
+
+      
 
       <!-- Sezione anagrafica -->
       <div class="border-t pt-4">
