@@ -3,8 +3,11 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 
+import MapSection from '@/Components/Profile/Public/MapSection.vue'
+
 const props = defineProps({
-  user: Object
+  user: Object,
+  places: Array
 })
 
 const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
@@ -41,6 +44,8 @@ const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
           <p><span class="font-semibold text-gray-700">Nome: </span>{{ user.name }}</p>
           <p><span class="font-semibold text-gray-700">Username: </span>@{{ user.username }}</p>
         </div>
+
+        <MapSection v-if="!user.private" :places="places" class="mt-6" />
 
         <!-- Qui in futuro potresti aggiungere altri contenuti pubblici come post, luoghi visitati, ecc -->
       </div>

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Trip;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -78,6 +80,7 @@ class ProfileController extends Controller
                     'private' => true,
                     'preview' => false,
                 ],
+                'places' => [], // mappa vuota se profilo privato
             ]);
         }
 
@@ -91,7 +94,38 @@ class ProfileController extends Controller
                 'private' => false,
                 'preview' => $isOwnProfile,
             ],
+            'places' => $this->populateMapData($user->id),
         ]);
+    }
+
+    private function populateMapData(int $userId): array
+    {
+        return Trip::with('places', 'places.photos')
+            ->where('user_id', $userId)
+            ->get()
+            ->flatMap(function ($trip) {
+                return $trip->places->map(function ($place) use ($trip) {
+                    return [
+                        'trip' => $trip->title,
+                        'trip_id' => $trip->id,
+                        'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
+                        'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),
+                        'name' => $place->name,
+                        'lat' => $place->lat,
+                        'lng' => $place->lng,
+                        'images' => $place->photos()
+                            ->where(function ($query) {
+                                $query->where('path', 'LIKE', '%.png')
+                                    ->orWhere('path', 'LIKE', '%.jpg')
+                                    ->orWhere('path', 'LIKE', '%.jpeg');
+                            })
+                            ->take(2)
+                            ->pluck('path')
+                            ->map(fn ($path) => "/storage/{$path}")
+                            ->toArray(),
+                    ];
+                });
+            })->values()->toArray(); // importante convertire a array puro
     }
 
 }
