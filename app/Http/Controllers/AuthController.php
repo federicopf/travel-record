@@ -48,7 +48,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'username' => 'required|string|min:5|max:255|unique:users',
+            'username' => 'required|string|min:5|max:255|unique:users|regex:/^[a-zA-Z0-9]+$/',
             'password' => 'required|string|min:8|confirmed',
             'type' => 'required|string|in:individual,couple',
             'partner_name' => 'nullable|string|max:255|required_if:type,couple',

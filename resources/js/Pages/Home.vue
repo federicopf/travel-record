@@ -21,7 +21,6 @@ const noTripsMessage = computed(() => {
         : 'Nessun viaggio disponibile. Aggiungine uno!';
 });
 
-// **1️⃣ Sostituisci la cronologia per rimuovere il login**
 const resetHistoryToHome = () => {
     history.replaceState({ step: 'home' }, '', route('home')); // Sostituisce lo stato iniziale con la Home
 };
