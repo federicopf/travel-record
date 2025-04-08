@@ -24,12 +24,12 @@ const showPrivacyForm = ref(false)
     <div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
       <div class="flex items-center justify-between mb-2">
         <h1 class="text-3xl font-bold text-gray-800">Profilo utente</h1>
-        <button
+        <Link
+          :href="route('profile.public', user.username)"
           class="text-sm text-blue-600 underline hover:text-blue-800 transition"
-          @click.prevent
         >
           Vedi preview del tuo profilo
-        </button>
+        </Link>
       </div>
       <p class="text-sm text-gray-500">
         Ultimo aggiornamento: {{ moment(user.updated_at).format('DD/MM/YYYY [alle] HH:mm') }}

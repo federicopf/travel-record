@@ -78,6 +78,8 @@ Route::middleware([AuthenticateUser::class])->group(function () {
         });
     });
 
+    Route::get('/profile/{username}', [ProfileController::class, 'publicProfile'])->name('profile.public');
+
     //UTILIIES
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 

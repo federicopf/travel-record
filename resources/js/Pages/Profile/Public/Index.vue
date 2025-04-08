@@ -1,3 +1,49 @@
+<script setup>
+import AppLayout from '@/Layouts/AppLayout.vue'
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+
+const props = defineProps({
+  user: Object
+})
+
+const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
+</script>
+
 <template>
-    
+  <AppLayout>
+    <div class="max-w-3xl mx-auto px-6 py-8">
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+          Profilo di {{ user.name }}
+        </h1>
+        <p class="text-gray-500 text-sm">
+          @{{ user.username }}
+        </p>
+      </div>
+
+      <div
+        v-if="user.preview"
+        class="mb-4 bg-yellow-100 text-yellow-800 text-sm px-4 py-2 rounded"
+      >
+        Stai visualizzando un’anteprima del tuo profilo pubblico.
+      </div>
+
+      <div
+        v-if="!user.preview && user.private"
+        class="text-center text-gray-500"
+      >
+        Questo profilo è privato.
+      </div>
+
+      <div v-else class="space-y-4">
+        <div class="bg-white p-4 rounded shadow">
+          <p><span class="font-semibold text-gray-700">Nome: </span>{{ user.name }}</p>
+          <p><span class="font-semibold text-gray-700">Username: </span>@{{ user.username }}</p>
+        </div>
+
+        <!-- Qui in futuro potresti aggiungere altri contenuti pubblici come post, luoghi visitati, ecc -->
+      </div>
+    </div>
+  </AppLayout>
 </template>

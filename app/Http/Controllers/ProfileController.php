@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -60,4 +61,37 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Impostazioni di privacy aggiornate.');
     }
+
+    public function publicProfile(string $username)
+    {
+        $authUser = Auth::user();
+        $user = User::where('username', $username)->firstOrFail();
+
+        $isOwnProfile = $authUser && $authUser->id === $user->id;
+        $isPrivate = $user->private_profile;
+
+        if (!$isOwnProfile && $isPrivate) {
+            return Inertia::render('Profile/Public/Index', [
+                'user' => [
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'private' => true,
+                    'preview' => false,
+                ],
+            ]);
+        }
+
+        return Inertia::render('Profile/Public/Index', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+                'private' => false,
+                'preview' => $isOwnProfile,
+            ],
+        ]);
+    }
+
 }
