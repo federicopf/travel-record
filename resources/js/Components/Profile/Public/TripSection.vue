@@ -6,7 +6,7 @@ const props = defineProps({
 
 <template>
   <div class="mt-10">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Viaggi pubblici</h2>
+    <hr class="m-5">
 
     <div v-if="trips.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       <div
