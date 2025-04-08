@@ -3,6 +3,9 @@ import { ref, onMounted, nextTick, computed } from 'vue'
 import { Loader } from '@googlemaps/js-api-loader'
 import { usePage } from '@inertiajs/vue3';
 
+const page = usePage()
+const username = page.props.user?.username
+
 const props = defineProps({
   places: Array
 })
@@ -13,7 +16,7 @@ const infoWindow = ref(null)
 const markers = ref([])
 
 const userPointerUrl = computed(() => {
-    return usePage().props.auth?.user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
+    return page.props.auth?.user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
 });
 
 const initializeMap = async () => {
@@ -79,7 +82,7 @@ const addMarkers = (google) => {
           <p style="text-align:center;font-size:12px;color:#555;">Dal ${place.start_date} al ${place.end_date}</p>
           ${images}
           <div style="text-align:center;margin-top:8px;">
-            <a href="/trip/${place.trip_id}" style="background-color:#d63384;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:13px;">Vai al viaggio</a>
+            <a href="`+route('profile.public.trip', { username, trip: place.trip_id })+`" style="background-color:#d63384;color:white;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:13px;">Vai al viaggio</a>
           </div>
         </div>
       `

@@ -17,7 +17,7 @@ const username = page.props.user?.username
       <Link
         v-for="trip in trips"
         :key="trip.id"
-        :href="route('profile.trip', { username, trip: trip.id })"
+        :href="route('profile.public.trip', { username, trip: trip.id })"
         class="bg-white shadow rounded-lg overflow-hidden hover:scale-[1.02] transition"
       >
         <img

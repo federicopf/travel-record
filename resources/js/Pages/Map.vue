@@ -102,7 +102,7 @@ const addMarkers = (google) => {
                     </p>
                     ${imageGallery}
                     <div style="text-align: center; margin-top: 10px;">
-                        <a href="/trip/${place.trip_id}" style="
+                        <a href="`+route('trip.show', { trip: place.trip_id })+`" style="
                             display: inline-block;
                             text-decoration: none;
                             color: white;
