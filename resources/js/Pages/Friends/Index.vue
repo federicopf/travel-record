@@ -56,7 +56,8 @@ const cancelFollow = async (userId) => {
       </div>
 
       <div v-if="friends.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <div
+        <Link
+          :href="route('profile.public',friend.username)"
           v-for="friend in friends"
           :key="friend.id"
           class="bg-white shadow rounded-lg p-4 text-center relative"
@@ -65,7 +66,7 @@ const cancelFollow = async (userId) => {
           <p class="text-sm text-gray-500">@{{ friend.username }}</p>
 
           <button
-            @click="cancelFollow(friend.id)"
+            @click.stop.prevent="cancelFollow(friend.id)"
             :disabled="sendingRequest === friend.id"
             class="mt-2 text-sm text-red-600 underline hover:text-red-800"
           >
@@ -78,7 +79,7 @@ const cancelFollow = async (userId) => {
           >
             {{ feedbacks[friend.id] }}
           </p>
-        </div>
+        </Link>
       </div>
 
       <p v-else class="text-gray-500 mt-6 text-center">
