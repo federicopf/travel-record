@@ -23,12 +23,18 @@ class TripController extends Controller
             ->get();
 
         $trips = $trips->map(function ($trip) {
+            $hashtags = $trip->places
+                ->flatMap->hashtags
+                ->unique('id')
+                ->values(); 
+                
             return [
                 'id' => $trip->id,
                 'title' => $trip->title,
                 'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
                 'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),
                 'image' => $trip->image ? "/storage/{$trip->image}" : null,
+                'hashtags' => $hashtags,
             ];
         });
 
