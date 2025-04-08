@@ -4,11 +4,14 @@ import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 
 import MapSection from '@/Components/Profile/Public/MapSection.vue'
+import TripSection from '@/Components/Profile/Public/TripSection.vue'
 
 const props = defineProps({
   user: Object,
-  places: Array
+  places: Array,
+  trips: Array
 })
+
 
 const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
 </script>
@@ -46,6 +49,8 @@ const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
         </div>
 
         <MapSection v-if="!user.private" :places="places" class="mt-6" />
+
+        <TripSection v-if="trips.length" :trips="trips" class="mt-6" />
 
         <!-- Qui in futuro potresti aggiungere altri contenuti pubblici come post, luoghi visitati, ecc -->
       </div>

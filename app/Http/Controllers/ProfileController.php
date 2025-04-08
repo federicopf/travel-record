@@ -95,6 +95,7 @@ class ProfileController extends Controller
                 'preview' => $isOwnProfile,
             ],
             'places' => $this->populateMapData($user->id),
+            'trips' => $this->populateTripData($user->id)
         ]);
     }
 
@@ -126,6 +127,31 @@ class ProfileController extends Controller
                     ];
                 });
             })->values()->toArray(); // importante convertire a array puro
+    }
+
+    private function populateTripData(int $userId): array
+    {
+        return Trip::with('places.photos', 'places.hashtags')
+            ->where('user_id', $userId)
+            ->orderBy('start_date', 'desc')
+            ->get()
+            ->map(function ($trip) {
+                // Raccolta degli hashtag unici associati ai luoghi del viaggio
+                $hashtags = $trip->places
+                    ->flatMap->hashtags
+                    ->unique('id')
+                    ->values();
+
+                return [
+                    'id' => $trip->id,
+                    'title' => $trip->title,
+                    'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
+                    'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),
+                    'image' => $trip->image ? "/storage/{$trip->image}" : null,
+                    'hashtags' => $hashtags
+                ];
+            })
+            ->toArray();
     }
 
 }
