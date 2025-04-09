@@ -75,6 +75,7 @@ Route::middleware([AuthenticateUser::class])->group(function () {
                 Route::put('/name', [ProfileController::class, 'updateName'])->name('profile.update.name');
                 Route::put('/password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
                 Route::put('/privacy', [ProfileController::class, 'updatePrivacy'])->name('profile.update.privacy');
+                Route::post('/photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
             });
         });
     });

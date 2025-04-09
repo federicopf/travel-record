@@ -6,6 +6,7 @@ import { Link } from '@inertiajs/vue3'
 import EditName from '@/Components/Profile/EditName.vue'
 import EditPassword from '@/Components/Profile/EditPassword.vue'
 import EditPrivacy from '@/Components/Profile/EditPrivacy.vue'
+import EditPhoto from '@/Components/Profile/EditPhoto.vue'
 
 const moment = window.moment
 
@@ -35,7 +36,10 @@ const showPrivacyForm = ref(false)
         Ultimo aggiornamento: {{ moment(user.updated_at).format('DD/MM/YYYY [alle] HH:mm') }}
       </p>
 
-      
+      <EditPhoto 
+        :current-photo="user.profile_photo_url" 
+        :user-name="user.name" 
+      />
 
       <!-- Sezione anagrafica -->
       <div class="border-t pt-4">
