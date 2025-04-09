@@ -33,7 +33,7 @@ class FollowController extends Controller
     public function search(Request $request)
     {
         $q = $request->query('q');
-        $user = auth()->user();
+        $user = Auth::user();
 
         $results = collect();
 
@@ -64,7 +64,7 @@ class FollowController extends Controller
 
     public function requests()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Trova tutte le richieste in attesa ricevute dall'utente loggato
         $requests = Follow::where('followed_id', $user->id)
@@ -129,7 +129,7 @@ class FollowController extends Controller
 
     public function unfollow(User $user)
     {
-        $authUser = auth()->user();
+        $authUser = Auth::user();
 
         DB::table('follows')
             ->where('follower_id', $authUser->id)

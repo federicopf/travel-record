@@ -229,7 +229,7 @@
                     </div>
                     <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mb-2">{{ form.errors.password_confirmation }}</p>
 
-                    <div class="mb-4 flex items-center">
+                    <div class="mb-4 flex items-center"  @click="showTermsModal = true">
                         <input 
                             type="checkbox" 
                             id="terms"
@@ -239,7 +239,7 @@
                         />
                         <label for="terms" class="text-sm text-gray-700">
                             Dichiaro di aver letto 
-                            <span class="text-blue-600 cursor-pointer underline" @click="showTermsModal = true">
+                            <span class="text-blue-600 cursor-pointer underline">
                                 Termini e Condizioni
                             </span>
                         </label>
