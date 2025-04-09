@@ -2,17 +2,19 @@
 import { onMounted, ref, computed, nextTick } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Loader } from '@googlemaps/js-api-loader'
+import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
-  place: Object
+  place: Object,
+  user: Object,
+  trip: Object
 })
 
 const map = ref(null)
 const mapInstance = ref(null)
 
 const userPointerUrl = computed(() => {
-  return props.place.map_pointer_url ??
-    'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png'
+  return props.place.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png'
 })
 
 const initializeMap = async () => {
@@ -23,9 +25,8 @@ const initializeMap = async () => {
   const loader = new Loader({
     apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     version: 'weekly',
-    libraries: ['places'] 
+    libraries: ['places']
   })
-
 
   try {
     const google = await loader.load()
@@ -61,10 +62,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <AppLayout>
+   <AppLayout>
     <div class="max-w-4xl mx-auto px-6 py-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ place.name }}</h1>
-      <p class="text-sm text-gray-600 mb-4">{{ place.address }}</p>
+      <Link
+        :href="route('profile.public.trip', { username: user.username, trip: trip.id })"
+        class="inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition mb-4"
+      >
+        Torna al viaggio
+      </Link>
+
+      <div class="mb-4">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ place.name }}</h1>
+        <p class="text-sm text-gray-600">{{ place.address }}</p>
+      </div>
 
       <div ref="map" class="w-full h-[350px] rounded shadow mb-6" />
 
