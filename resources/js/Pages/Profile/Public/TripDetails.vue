@@ -81,10 +81,15 @@ onMounted(() => {
 
       <h2 class="text-2xl font-bold text-gray-700 mt-6 mb-4">Luoghi visitati</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div
+        <Link
           v-for="place in trip.places"
           :key="place.id"
-          class="bg-white shadow-lg rounded-lg overflow-hidden"
+          :href="route('profile.public.trip.place', {
+            username: trip.username,
+            trip: trip.id,
+            place: place.id
+          })"
+          class="bg-white shadow-lg rounded-lg overflow-hidden hover:scale-[1.01] transition"
         >
           <img v-if="place.photos.length" :src="place.firstPhoto" class="w-full h-40 object-cover">
           <div v-else class="w-full h-40 bg-gray-300 flex items-center justify-center text-gray-500">
@@ -105,7 +110,8 @@ onMounted(() => {
               </span>
             </div>
           </div>
-        </div>
+        </Link>
+
       </div>
     </div>
   </AppLayout>

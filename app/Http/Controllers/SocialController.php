@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Place;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
@@ -159,6 +160,61 @@ class SocialController extends Controller
                         'name' => $tag->name,
                         'color' => $tag->color,
                     ]),
+                ])
+            ]
+        ]);
+    }
+
+    public function publicTripPlace(string $username, Trip $trip, Place $place)
+    {
+        $authUser = Auth::user();
+        $user = User::where('username', $username)->firstOrFail();
+
+        $isOwnProfile = $authUser && $authUser->id === $user->id;
+        $isFollowing = false;
+
+        if (!$isOwnProfile) {
+            $isFollowing = \App\Models\Follow::where('follower_id', $authUser?->id)
+                ->where('followed_id', $user->id)
+                ->where('status', 'accepted')
+                ->exists();
+        }
+
+        $canView = !$user->private_profile || $isOwnProfile || $isFollowing;
+
+        if (!$canView) {
+            abort(403, 'Questo profilo è privato.');
+        }
+
+        if ($trip->user_id !== $user->id || $place->trip_id !== $trip->id) {
+            abort(404, 'Viaggio o luogo non valido.');
+        }
+
+        $place->load(['photos', 'hashtags']);
+
+        return Inertia::render('Profile/Public/TripPlaceDetails', [
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'name' => $user->name
+            ],
+            'trip' => [
+                'id' => $trip->id,
+                'title' => $trip->title,
+                'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'),
+                'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y')
+            ],
+            'place' => [
+                'id' => $place->id,
+                'name' => $place->name,
+                'address' => $place->address,
+                'lat' => $place->lat,
+                'lng' => $place->lng,
+                'photos' => $place->photos->map(fn ($p) => "/storage/{$p->path}"),
+                'hashtags' => $place->hashtags->map(fn ($tag) => [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'color' => $tag->color,
                 ])
             ]
         ]);

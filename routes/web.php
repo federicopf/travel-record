@@ -83,7 +83,9 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     Route::prefix('/profile/{username}')->group(function () {
         Route::get('/', [SocialController::class, 'publicProfile'])->name('profile.public');
         Route::get('/trip/{trip}', [SocialController::class, 'publicTrip'])->name('profile.public.trip');
+        Route::get('/trip/{trip}/place/{place}', [SocialController::class, 'publicTripPlace'])->name('profile.public.trip.place');
     });
+
 
     //UTILIIES
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
