@@ -4,6 +4,8 @@ import { router, Link  } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import axios from 'axios'
 
+import ProfilePicture from '@/Components/Profile/Sections/ProfilePicture.vue'
+
 const props = defineProps({
   query: String,
   results: Array
@@ -91,8 +93,16 @@ const cancelFollow = async (userId) => {
         <div
           v-for="user in results"
           :key="user.id"
-          class="bg-white shadow rounded-lg p-4 text-center relative"
+          class="bg-white shadow rounded-lg p-4 text-center flex flex-col items-center"
         >
+          <ProfilePicture
+            :username="user.username"
+            :name="user.name"
+            :size="'w-16 h-16'"
+            :font-size="'text-xl'"
+            class="mb-2"
+          />
+          
           <h2 class="text-lg font-semibold text-gray-800">{{ user.name }}</h2>
           <p class="text-sm text-gray-500">@{{ user.username }}</p>
 

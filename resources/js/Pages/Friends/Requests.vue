@@ -4,55 +4,40 @@ import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import axios from 'axios'
 
+import ProfilePicture from '@/Components/Profile/Sections/ProfilePicture.vue'
+
 const props = defineProps({
   requests: Array
 })
 
-const accepting = ref(null)
-const rejecting = ref(null)
+const processingUserId = ref(null)
 const feedbacks = ref({}) // userId: message
 
-const acceptRequest = async (userId) => {
-  accepting.value = userId
+const handleRequest = async (userId, action) => {
+  processingUserId.value = userId
 
   try {
-    await axios.put(route('friends.accept', userId))
-
-    const index = props.requests.findIndex(user => user.id === userId)
-    if (index !== -1) {
+    if (action === 'accept') {
+      await axios.put(route('friends.accept', userId))
       feedbacks.value[userId] = 'Richiesta accettata!'
-      setTimeout(() => {
-        props.requests.splice(index, 1)
-        delete feedbacks.value[userId]
-      }, 3000)
-    }
-  } catch (e) {
-    feedbacks.value[userId] = 'Errore durante l’accettazione.'
-    setTimeout(() => delete feedbacks.value[userId], 3000)
-  } finally {
-    accepting.value = null
-  }
-}
-
-const rejectRequest = async (userId) => {
-  rejecting.value = userId
-
-  try {
-    await axios.delete(route('friends.reject', userId))
-
-    const index = props.requests.findIndex(user => user.id === userId)
-    if (index !== -1) {
+    } else {
+      await axios.delete(route('friends.reject', userId))
       feedbacks.value[userId] = 'Richiesta rifiutata.'
-      setTimeout(() => {
-        props.requests.splice(index, 1)
-        delete feedbacks.value[userId]
-      }, 3000)
     }
+
+    // Rimuove l'utente dalla lista dopo 3 secondi
+    setTimeout(() => {
+      const index = props.requests.findIndex(u => u.id === userId)
+      if (index !== -1) {
+        props.requests.splice(index, 1)
+      }
+      delete feedbacks.value[userId]
+    }, 3000)
   } catch (e) {
-    feedbacks.value[userId] = 'Errore durante il rifiuto.'
+    feedbacks.value[userId] = 'Errore. Riprova.'
     setTimeout(() => delete feedbacks.value[userId], 3000)
   } finally {
-    rejecting.value = null
+    processingUserId.value = null
   }
 }
 </script>
@@ -60,9 +45,8 @@ const rejectRequest = async (userId) => {
 <template>
   <AppLayout>
     <div class="max-w-4xl mx-auto px-6 py-8">
-
       <h1 class="text-3xl font-bold text-gray-800 mb-6">Richieste di amicizia</h1>
-      
+
       <div class="mb-4">
         <Link
           :href="route('friends.index')"
@@ -72,37 +56,46 @@ const rejectRequest = async (userId) => {
         </Link>
       </div>
 
-      <div v-if="requests.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div v-if="requests.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
           v-for="user in requests"
           :key="user.id"
-          class="bg-white shadow rounded-lg p-4 text-center"
+          class="bg-white shadow rounded-lg p-4 text-center flex flex-col items-center"
         >
+          <ProfilePicture
+            :username="user.username"
+            :name="user.name"
+            :size="'w-16 h-16'"
+            :font-size="'text-xl'"
+            class="mb-2"
+          />
+
           <h2 class="text-lg font-semibold text-gray-800">{{ user.name }}</h2>
-          <p class="text-sm text-gray-500">@{{ user.username }}</p>
+          <p class="text-sm text-gray-500 mb-3">@{{ user.username }}</p>
 
-          <div class="mt-4 flex flex-col gap-2">
-            <button
-              @click="acceptRequest(user.id)"
-              :disabled="accepting === user.id"
-              class="bg-green-600 text-white py-1 rounded hover:bg-green-700 transition"
-            >
-              {{ accepting === user.id ? '...' : 'Accetta' }}
-            </button>
-            <button
-              @click="rejectRequest(user.id)"
-              :disabled="rejecting === user.id"
-              class="bg-red-500 text-white py-1 rounded hover:bg-red-600 transition"
-            >
-              {{ rejecting === user.id ? '...' : 'Rifiuta' }}
-            </button>
-
-            <p
-              v-if="feedbacks[user.id]"
-              class="text-xs text-center text-gray-600 mt-1"
-            >
+          <div class="w-full">
+            <!-- Mostra messaggio di feedback se esiste -->
+            <p v-if="feedbacks[user.id]" class="text-sm text-center text-gray-600">
               {{ feedbacks[user.id] }}
             </p>
+
+            <!-- Mostra bottoni solo se nessun feedback è già presente -->
+            <div v-else class="flex flex-col gap-2">
+              <button
+                @click="handleRequest(user.id, 'accept')"
+                :disabled="processingUserId === user.id"
+                class="bg-green-600 text-white py-1 rounded hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Accetta
+              </button>
+              <button
+                @click="handleRequest(user.id, 'reject')"
+                :disabled="processingUserId === user.id"
+                class="bg-red-500 text-white py-1 rounded hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Rifiuta
+              </button>
+            </div>
           </div>
         </div>
       </div>

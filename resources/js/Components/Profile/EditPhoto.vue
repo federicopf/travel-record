@@ -1,15 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
+import ProfilePicture from '@/Components/Profile/Sections/ProfilePicture.vue'
+
 const props = defineProps({
-  currentPhoto: String,
   userName: String,
-  userId: Number 
+  userId: Number
 })
 
 const form = useForm({ photo: null })
-const photoPreview = ref(props.currentPhoto)
+const localPreview = ref(null)
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
@@ -17,7 +18,7 @@ const handleFileChange = (event) => {
     form.photo = file
     const reader = new FileReader()
     reader.onload = (e) => {
-      photoPreview.value = e.target.result
+      localPreview.value = e.target.result
     }
     reader.readAsDataURL(file)
   }
@@ -28,15 +29,6 @@ const submit = () => {
     preserveScroll: true
   })
 }
-
-const initials = computed(() => {
-  if (!props.userName) return 'U'
-  return props.userName
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-})
 </script>
 
 <template>
@@ -44,26 +36,14 @@ const initials = computed(() => {
     <h2 class="text-xl font-semibold text-gray-700 mb-4">Foto profilo</h2>
 
     <div class="flex items-center gap-6 flex-wrap sm:flex-nowrap">
-      <div class="shrink-0">
-        <div
-          v-if="photoPreview"
-          class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 shadow-md"
-        >
-        <img
-          :src="route('profile.public.photo', userName)"
-          alt="Foto profilo"
-          class="w-full h-full object-cover"
-        />
-
-        </div>
-
-        <div
-          v-else
-          class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl font-bold border-2 border-gray-300 shadow-md"
-        >
-          {{ initials }}
-        </div>
-      </div>
+      <!-- Usa il componente riutilizzabile -->
+      <ProfilePicture
+        :username="props.userName"
+        :name="props.userName"
+        :size="'w-24 h-24'"
+        :font-size="'text-3xl'"
+        :img-src="localPreview"
+      />
 
       <div class="flex flex-col gap-2 w-full max-w-sm">
         <label class="block text-sm font-medium text-gray-600">Seleziona una nuova immagine</label>

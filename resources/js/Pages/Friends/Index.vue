@@ -4,6 +4,8 @@ import { Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import axios from 'axios'
 
+import ProfilePicture from '@/Components/Profile/Sections/ProfilePicture.vue'
+
 const props = defineProps({
   friends: Array,
   requests_count: Number
@@ -60,8 +62,16 @@ const cancelFollow = async (userId) => {
           :href="route('profile.public',friend.username)"
           v-for="friend in friends"
           :key="friend.id"
-          class="bg-white shadow rounded-lg p-4 text-center relative"
+          class="bg-white shadow rounded-lg p-4 text-center flex flex-col items-center"
         >
+          <ProfilePicture
+            :username="friend.username"
+            :name="friend.name"
+            :size="'w-16 h-16'"
+            :font-size="'text-xl'"
+            class="mb-2"
+          />
+          
           <h2 class="text-lg font-semibold text-gray-800">{{ friend.name }}</h2>
           <p class="text-sm text-gray-500">@{{ friend.username }}</p>
 

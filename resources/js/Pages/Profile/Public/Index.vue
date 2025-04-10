@@ -1,7 +1,9 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
+
+import ProfilePicture from '@/Components/Profile/Sections/ProfilePicture.vue'
 
 import MapSection from '@/Components/Profile/Public/MapSection.vue'
 import TripSection from '@/Components/Profile/Public/TripSection.vue'
@@ -12,8 +14,26 @@ const props = defineProps({
   trips: Array
 })
 
+const initials = computed(() => {
+  if (!props.user.name) return 'U'
+  return props.user.name
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+})
 
-const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
+const photoExists = ref(false)
+
+onMounted(async () => {
+  try {
+    const res = await fetch(`/profile/${props.user.username}/photo`, { method: 'HEAD' })
+    photoExists.value = res.ok
+  } catch (e) {
+    photoExists.value = false
+  }
+})
+
 </script>
 
 <template>
@@ -38,14 +58,28 @@ const isMe = computed(() => usePage().props.auth?.user?.id === props.user?.id)
         </a>
       </div>
 
-      <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">
-          Profilo di {{ user.name }}
-        </h1>
-        <p class="text-gray-500 text-sm">
-          @{{ user.username }}
-        </p>
+      <div class="flex items-center gap-4 mb-6">
+        <div
+          class="w-16 h-16 rounded-full border shadow flex items-center justify-center overflow-hidden bg-gray-100 text-gray-500 font-bold text-lg"
+        >
+          <ProfilePicture
+            :username="props.user.username"
+            :name="props.user.name"
+            :size="'w-24 h-24'"
+            :font-size="'text-3xl'"
+          />
+        </div>
+
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+            Profilo di {{ user.name }}
+          </h1>
+          <p class="text-gray-500 text-sm">
+            @{{ user.username }}
+          </p>
+        </div>
       </div>
+
 
       <div
         v-if="user.preview"
