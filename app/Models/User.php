@@ -26,7 +26,8 @@ class User extends Authenticatable
         'username',
         'email_verified_at',
         'theme_id',
-        'map_pointer_id'
+        'map_pointer_id',
+        'profile_photo'
     ];
 
     /**

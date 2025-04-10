@@ -78,11 +78,10 @@ class ProfileController extends Controller
         $path = $request->file('photo')->store('profile_photos', 'public');
 
         $user->update([
-            'profile_photo_path' => $path
+            'profile_photo' => $path
         ]);
 
         return back()->with('success', 'Foto profilo aggiornata con successo!');
     }
-
 
 }

@@ -37,8 +37,9 @@ const showPrivacyForm = ref(false)
       </p>
 
       <EditPhoto 
-        :current-photo="user.profile_photo_url" 
-        :user-name="user.name" 
+        :current-photo="user.profile_photo" 
+        :user-name="user.username" 
+        :user-id="user.id"
       />
 
       <!-- Sezione anagrafica -->

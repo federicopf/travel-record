@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SocialController extends Controller
@@ -218,6 +219,17 @@ class SocialController extends Controller
                 ])
             ]
         ]);
+    }
+
+    public function profilePhoto(string $username)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        if (!$user->profile_photo || !Storage::disk('public')->exists($user->profile_photo)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('public')->path($user->profile_photo));
     }
 
 }

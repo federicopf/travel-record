@@ -83,6 +83,7 @@ Route::middleware([AuthenticateUser::class])->group(function () {
     //SOCIAL
     Route::prefix('/profile/{username}')->group(function () {
         Route::get('/', [SocialController::class, 'publicProfile'])->name('profile.public');
+        Route::get('/photo', [SocialController::class, 'profilePhoto'])->name('profile.public.photo');
         Route::get('/trip/{trip}', [SocialController::class, 'publicTrip'])->name('profile.public.trip');
         Route::get('/trip/{trip}/place/{place}', [SocialController::class, 'publicTripPlace'])->name('profile.public.trip.place');
     });
