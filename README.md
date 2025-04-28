@@ -31,6 +31,7 @@ composer install
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan storage:link
 ./vendor/bin/sail artisan ziggy:generate resources/js/ziggy.js
 
 ./vendor/bin/sail npm install
