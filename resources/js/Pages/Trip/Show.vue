@@ -1,26 +1,24 @@
 <script setup>
-
-import TripHashtagSummary from '@/Components/Trip/TripHashtagSummary.vue'
-
+import TripHashtagSummary from '@/Components/Trip/TripHashtagSummary.vue';
+import PlaceCard from '@/Components/Trip/PlaceCard.vue';
+import ActionButton from '@/Components/UI/ActionButton.vue';
 import { ref, onMounted, computed } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
-import { TrashIcon } from '@heroicons/vue/24/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps(['trip']);
 const page = usePage();
+const user = page.props.auth?.user ?? null;
 
 const map = ref(null);
 const mapInstance = ref(null);
 const placeInput = ref(null);
-const user = page.props.auth?.user ?? null; 
-
 let autocomplete = null;
 
-const userPointerUrl = computed(() => {
-    return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
-});
+const userPointerUrl = computed(() => 
+    user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png'
+);
 
 const form = useForm({
     name: '',
@@ -29,26 +27,22 @@ const form = useForm({
     lng: ''
 });
 
-// Funzione per eliminare il viaggio
 const deleteTrip = () => {
     if (confirm("Sei sicuro di voler eliminare questo viaggio? L'operazione non può essere annullata.")) {
         form.delete(route('trip.destroy', props.trip.id));
     }
 };
 
-// **Funzione per rimuovere un posto dalla lista frontend**
 const removePlace = (placeId) => {
     if (confirm("Sei sicuro di voler eliminare questo posto?")) {
         form.delete(route('trip.place.destroy', { trip: props.trip.id, place: placeId }));
     }
 };
 
-// **Gestisce la navigazione al dettaglio del luogo**
 const navigateToPlace = (placeId) => {
     router.visit(route('trip.place.show', { trip: props.trip.id, place: placeId }));
 };
 
-// **Inizializza la mappa**
 const initializeMap = async () => {
     const loader = new Loader({
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -58,7 +52,6 @@ const initializeMap = async () => {
 
     try {
         const google = await loader.load();
-
         const center = props.trip.places.length > 0
             ? { lat: parseFloat(props.trip.places[0].lat), lng: parseFloat(props.trip.places[0].lng) }
             : { lat: 41.9028, lng: 12.4964 };
@@ -80,13 +73,11 @@ const initializeMap = async () => {
                 title: place.name
             });
         });
-
     } catch (error) {
         console.error("Errore durante il caricamento della mappa:", error);
     }
 };
 
-// **Inizializza Google Places Autocomplete e invia il luogo automaticamente**
 const initializeAutocomplete = async () => {
     const loader = new Loader({
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -113,7 +104,7 @@ const initializeAutocomplete = async () => {
                     form.post(route('trip.place.addPlace', props.trip.id), {
                         onSuccess: () => {
                             form.reset();
-                            placeInput.value.value = ''; 
+                            placeInput.value.value = '';
                         }
                     });
                 }
@@ -134,91 +125,70 @@ onMounted(() => {
     <AppLayout>
         <div class="container mx-auto px-4 py-6">
             <div v-if="trip.image" class="mb-6">
-                <img :src="trip.image" alt="Immagine non trovata!" class="w-full h-64 object-cover rounded-lg shadow-lg">
+                <img :src="trip.image" alt="Immagine del viaggio" class="w-full h-64 object-cover rounded-lg shadow-lg">
             </div>
 
-            <div class="flex my-4">
-                <Link :href="route('home')"
-                    :class="`bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300`">
+            <div class="flex gap-4 mb-6">
+                <Link 
+                    :href="route('home')"
+                    class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+                >
                     Indietro
                 </Link>
-            </div>
-
-            <h1 class="text-3xl font-bold text-gray-700 mb-6">{{ trip.title }}</h1>
-
-            <div class="flex my-4">
-                <Link :href="route('trip.edit', trip.id)"
-                    :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-${$colorScheme}-600 transition duration-300`">
+                <Link 
+                    :href="route('trip.edit', trip.id)"
+                    :class="`bg-${$colorScheme}-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-${$colorScheme}-600 transition`"
+                >
                     Modifica viaggio
                 </Link>
             </div>
 
-            <p class="text-gray-600">Dal {{ trip.start_date }} al {{ trip.end_date }}</p>
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-700 mb-2">{{ trip.title }}</h1>
+                <p class="text-gray-600">Dal {{ trip.start_date }} al {{ trip.end_date }}</p>
+            </div>
 
-            <!-- Mappa -->
-            <div ref="map" class="w-full h-[400px] rounded-lg shadow my-6"></div>
+            <div ref="map" class="w-full h-[400px] rounded-lg shadow mb-6"></div>
 
             <TripHashtagSummary :places="trip.places" />
 
-            <!-- Luoghi visitati -->
-            <h2 class="text-2xl font-bold text-gray-700 mt-6 mb-4">Luoghi visitati</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div v-for="place in trip.places" :key="place.id"
-                    class="relative bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer transition transform hover:scale-105"
-                    @click.stop="navigateToPlace(place.id)"> 
-
-                    <button @click.stop="removePlace(place.id)"
-                        class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition flex items-center justify-center z-10">
-                        <TrashIcon class="w-6 h-6" />
-                    </button>
-
-                    <div class="relative">
-                        <img v-if="place.photos.length > 0" :src="place.firstPhoto" class="w-full h-40 object-cover">
-                        <div v-else class="w-full h-40 bg-gray-300 flex items-center justify-center">
-                            <span class="text-gray-500">Nessuna immagine</span>
-                        </div>
-                    </div>
-
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold text-gray-800">{{ place.name }}</h3>
-                        <p class="text-gray-600 text-sm mt-1">{{ place.address }}</p>
-                        <div class="flex flex-wrap gap-1 mt-2">
-                            <span
-                                v-for="hashtag in place.hashtags"
-                                :key="hashtag.id"
-                                :style="{ backgroundColor: hashtag.color }"
-                                class="text-xs text-white px-2 py-1 rounded-full"
-                                >
-                                #{{ hashtag.name }}
-                            </span>
-                        </div>
-                    </div>
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">Luoghi visitati</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <PlaceCard 
+                        v-for="place in trip.places" 
+                        :key="place.id"
+                        :place="place"
+                        :trip-id="trip.id"
+                        :show-delete-button="true"
+                        @delete="removePlace"
+                        @click="navigateToPlace"
+                    />
                 </div>
             </div>
 
-            <!-- Aggiungi Luogo -->
-            <div class="mt-6">
-                <h2 class="text-2xl font-bold text-gray-700 mb-2">Aggiungi un nuovo posto</h2>
-
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">Aggiungi un nuovo posto</h2>
                 <div class="flex gap-2">
-                    <input ref="placeInput" type="text" placeholder="Cerca un luogo..." 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    
-                    <button :class="`bg-${$colorScheme}-500 text-white px-4 py-2 rounded shadow-lg hover:bg-${$colorScheme}-600 transition`">
+                    <input 
+                        ref="placeInput" 
+                        type="text" 
+                        placeholder="Cerca un luogo..." 
+                        class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    >
+                    <ActionButton size="sm">
                         +
-                    </button>
+                    </ActionButton>
                 </div>
             </div>
 
-            <hr class="mt-10 border-black"> 
-            
-            <!-- Bottone per eliminare il viaggio -->
-            <div class="mt-10 flex justify-center">
-                <button 
+            <div class="mt-10 pt-6 border-t border-gray-300 text-center">
+                <ActionButton 
+                    variant="danger"
                     @click="deleteTrip"
-                    class="bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                >
                     Elimina Viaggio
-                </button>
+                </ActionButton>
             </div>
         </div>
     </AppLayout>

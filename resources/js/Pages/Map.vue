@@ -6,25 +6,23 @@ import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps(['places']);
 const page = usePage();
-const user = page.props.auth?.user ?? null; // Otteniamo l'utente
+const user = page.props.auth?.user ?? null;
 
 const map = ref(null);
 const mapInstance = ref(null);
 const markers = ref([]);
 const infoWindow = ref(null);
 
-// Computed property per l'icona del Map Pointer dell'utente
-const userPointerUrl = computed(() => {
-    return user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png';
-});
+const userPointerUrl = computed(() => 
+    user?.map_pointer_url ?? 'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Ball-Pink-icon.png'
+);
 
-// Computed property per il titolo dinamico
-const mapTitle = computed(() => {
-    return user?.type === 'couple' ? 'Mappa dei nostri viaggi' : 'Mappa dei miei viaggi';
-});
+const mapTitle = computed(() => 
+    user?.type === 'couple' ? 'Mappa dei nostri viaggi' : 'Mappa dei miei viaggi'
+);
 
 const initializeMap = async () => {
-    await nextTick(); // Assicura che il DOM sia montato prima di iniziare
+    await nextTick();
 
     if (!map.value) {
         console.error("Errore: l'elemento della mappa non è stato trovato.");
@@ -47,7 +45,6 @@ const initializeMap = async () => {
         });
 
         infoWindow.value = new google.maps.InfoWindow();
-
         addMarkers(google);
     } catch (error) {
         console.error("Errore durante il caricamento di Google Maps:", error);
@@ -57,7 +54,6 @@ const initializeMap = async () => {
 const addMarkers = (google) => {
     if (!mapInstance.value) return;
 
-    // Rimuoviamo i marker precedenti
     markers.value.forEach(marker => marker.setMap(null));
     markers.value = [];
 
@@ -66,7 +62,7 @@ const addMarkers = (google) => {
             position: { lat: parseFloat(place.lat), lng: parseFloat(place.lng) },
             map: mapInstance.value,
             icon: {
-                url: userPointerUrl.value, // Usa il Map Pointer dell'utente
+                url: userPointerUrl.value,
                 scaledSize: new google.maps.Size(40, 40),
                 anchor: new google.maps.Point(20, 40)
             },
@@ -74,15 +70,13 @@ const addMarkers = (google) => {
         });
 
         marker.addListener("click", () => {
-            let imageGallery = "";
-            if (place.images && place.images.length > 0) {
-                imageGallery = `
-                    <div style="display: flex; justify-content: center; gap: 5px; margin-top: 8px;">
-                        ${place.images.map(img => `
-                            <img src="${img}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; box-shadow: 2px 2px 6px rgba(0,0,0,0.2);">
-                        `).join('')}
-                    </div>`;
-            }
+            const imageGallery = place.images && place.images.length > 0 
+                ? `<div style="display: flex; justify-content: center; gap: 5px; margin-top: 8px;">
+                    ${place.images.map(img => `
+                        <img src="${img}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; box-shadow: 2px 2px 6px rgba(0,0,0,0.2);">
+                    `).join('')}
+                   </div>`
+                : '';
 
             infoWindow.value.setContent(`
                 <div style="
@@ -102,7 +96,7 @@ const addMarkers = (google) => {
                     </p>
                     ${imageGallery}
                     <div style="text-align: center; margin-top: 10px;">
-                        <a href="`+route('trip.show', { trip: place.trip_id })+`" style="
+                        <a href="${route('trip.show', { trip: place.trip_id })}" style="
                             display: inline-block;
                             text-decoration: none;
                             color: white;
@@ -123,8 +117,6 @@ const addMarkers = (google) => {
 
         markers.value.push(marker);
     });
-
-    console.log("Markers aggiunti:", markers.value);
 };
 
 onMounted(() => {
