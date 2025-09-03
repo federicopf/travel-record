@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
@@ -25,7 +25,9 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        $authService = new AuthService();
+        
+        if (!$authService->login($credentials)) {
             throw ValidationException::withMessages([
                 'username' => __('auth.failed'), 
             ]);
@@ -45,7 +47,7 @@ class AuthController extends Controller
     // Gestisce la registrazione di un nuovo utente
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'username' => 'required|string|min:5|max:255|unique:users|regex:/^[a-zA-Z0-9]+$/',
@@ -54,24 +56,8 @@ class AuthController extends Controller
             'partner_name' => 'nullable|string|max:255|required_if:type,couple',
         ]);
 
-        $userData = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'username' => $request->username,
-            'map_pointer_id' => 0,
-            'theme_id' => 1,
-            'password' => Hash::make($request->password),
-            'type' => $request->type,
-        ];
-
-        // Se il tipo è "couple", aggiungiamo il nome del partner
-        if ($request->type === 'couple') {
-            $userData['partner_name'] = $request->partner_name;
-        }
-
-        $user = User::create($userData);
-
-        Auth::login($user);
+        $authService = new AuthService();
+        $user = $authService->register($validated);
 
         return redirect()->route('home')->with('success', 'Registrazione completata con successo!');
     }
@@ -80,7 +66,9 @@ class AuthController extends Controller
     // Logout e distruzione sessione
     public function logout(Request $request)
     {
-        Auth::logout();
+        $authService = new AuthService();
+        $authService->logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -90,22 +78,19 @@ class AuthController extends Controller
     // Cambia la password dell'utente autenticato
     public function changePassword(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'current_password' => 'required',
             'new_password' => 'required|string|min:8|confirmed',
         ]);
 
+        $authService = new AuthService();
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (!$authService->changePassword($user, $validated)) {
             throw ValidationException::withMessages([
-                'current_password' => __('passwords.current'), // Usa il file di traduzione
+                'current_password' => __('passwords.current'),
             ]);
         }
-
-        $user->update([
-            'password' => Hash::make($request->new_password),
-        ]);
 
         return back()->with('success', 'Password aggiornata con successo!');
     }

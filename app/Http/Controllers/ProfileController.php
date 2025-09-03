@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Trip;
 use App\Models\User;
-use Carbon\Carbon;
+use App\Services\ProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
@@ -31,7 +28,8 @@ class ProfileController extends Controller
             'partner_name' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $user->update($validated);
+        $profileService = new ProfileService();
+        $profileService->updateName($user, $validated);
 
         return back()->with('success', 'Nome aggiornato con successo.');
     }
@@ -43,12 +41,11 @@ class ProfileController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
+        $profileService = new ProfileService();
+        
+        if (!$profileService->updatePassword($user, $validated)) {
             return back()->withErrors(['current_password' => 'La password attuale non è corretta.']);
         }
-
-        $user->password = Hash::make($validated['password']);
-        $user->save();
 
         return back()->with('success', 'Password aggiornata con successo.');
     }
@@ -59,8 +56,8 @@ class ProfileController extends Controller
             'private_profile' => ['required', 'boolean'],
         ]);
 
-        $user->private_profile = $validated['private_profile'];
-        $user->save();
+        $profileService = new ProfileService();
+        $profileService->updatePrivacy($user, $validated);
 
         return back()->with('success', 'Impostazioni di privacy aggiornate.');
     }
@@ -71,15 +68,8 @@ class ProfileController extends Controller
             'photo' => 'required|image|max:5120',
         ]);
 
-        if ($user->profile_photo_path) {
-            Storage::disk('public')->delete($user->profile_photo_path);
-        }
-
-        $path = $request->file('photo')->store('profile_photos', 'public');
-
-        $user->update([
-            'profile_photo' => $path
-        ]);
+        $profileService = new ProfileService();
+        $profileService->updatePhoto($user, $request->file('photo'));
 
         return back()->with('success', 'Foto profilo aggiornata con successo!');
     }

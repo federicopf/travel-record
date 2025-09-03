@@ -2,67 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hashtag;
 use App\Models\Trip;
 use App\Models\Place;
 use App\Models\Photo;
-
+use App\Services\PlaceService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
-
 use Inertia\Inertia;
 
 class PlaceController extends Controller
 {
     public function show(Trip $trip, Place $place)
     {
-        if (!$this->authorizeTrip($trip->id)) {
-            return Redirect::route('home');
-        }
-
-        $place->load('photos');
-        $place->load('hashtags');
-
-        // Aggiungere il prefisso `/storage/` ai percorsi delle immagini
-        $place->photos->transform(function ($photo) {
-            $photo->path = asset('storage/' . ltrim($photo->path, '/'));
-            return $photo;
-        });
-
-        $availableHashtags = Hashtag::all();
+        $placeService = new PlaceService();
+        $placeData = $placeService->getPlaceWithDetails($trip, $place);
 
         return Inertia::render('Trip/Place/Show', [
             'trip' => $trip,
-            'place' => $place,
-            'availableHashtags' => $availableHashtags,
+            'place' => $placeData['place'],
+            'availableHashtags' => $placeData['availableHashtags'],
         ]);
     }
 
     public function destroy(Trip $trip, Place $place)
     {
-        if (!$this->authorizeTrip($trip->id)) {
-            return Redirect::route('home');
-        }
-
-        if ($place->trip_id !== $trip->id) {
-            return response()->json(['error' => 'Il posto non appartiene a questo viaggio'], 403);
-        }
-
-        $path = "uploads/trips/{$trip->id}/{$place->id}";
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->deleteDirectory($path);
-        }
-
-        $place->delete();
+        $placeService = new PlaceService();
+        $placeService->deletePlace($trip, $place);
 
         return Redirect::route('trip.show',$trip->id)->with('success', 'Posto eliminato con successo.');
     }
     
     public function edit(Trip $trip, Place $place)
     {
-        if (!$this->authorizeTrip($trip->id)) {
+        $placeService = new PlaceService();
+        
+        if (!$placeService->authorizeTrip($trip->id)) {
             return Redirect::route('home');
         }
 
@@ -74,21 +48,15 @@ class PlaceController extends Controller
     
     public function update(Request $request, Trip $trip, Place $place)
     {
-        if (!$this->authorizeTrip($trip->id)) {
-            return Redirect::route('home');
-        }
-
-        if ($place->trip_id !== $trip->id) {
-            abort(403, 'Accesso non autorizzato.');
-        }
-
+        $placeService = new PlaceService();
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
         ]);
 
-        $place->update($validated);
+        $placeService->updatePlace($trip, $place, $validated);
 
         return redirect()
             ->route('trip.place.show', ['trip' => $trip->id, 'place' => $place->id])

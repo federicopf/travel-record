@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ThemeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,26 +13,26 @@ class ThemeController extends Controller
      */
     public function change(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'theme_id' => 'required|integer|exists:themes,id'
         ]);
 
+        $themeService = new ThemeService();
         $user = Auth::user();
-        $user->theme_id = $request->theme_id;
-        $user->save();
+        $themeService->changeTheme($user, $validated['theme_id']);
 
         return back();
     }
     
     public function changeMapPointer(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'map_pointer_id' => 'required|exists:map_pointers,id',
         ]);
 
+        $themeService = new ThemeService();
         $user = Auth::user();
-        $user->map_pointer_id = $request->map_pointer_id;
-        $user->save();
+        $themeService->changeMapPointer($user, $validated['map_pointer_id']);
 
         return back()->with('success', 'Segnaposto aggiornato con successo!');
     }

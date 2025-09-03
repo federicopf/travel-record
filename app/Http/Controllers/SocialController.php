@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Place;
 use App\Models\Trip;
 use App\Models\User;
-use Carbon\Carbon;
+use App\Services\SocialService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -16,49 +14,10 @@ class SocialController extends Controller
     
     public function publicProfile(string $username)
     {
-        $authUser = Auth::user();
-        $user = User::where('username', $username)->firstOrFail();
+        $socialService = new SocialService();
+        $profileData = $socialService->getPublicProfile($username);
 
-        $isOwnProfile = $authUser && $authUser->id === $user->id;
-        $isPrivate = $user->private_profile;
-
-        // Verifica se l'utente loggato segue quello che si sta visualizzando
-        $isFollowing = false;
-        if ($authUser && !$isOwnProfile) {
-            $isFollowing = \App\Models\Follow::where('follower_id', $authUser->id)
-                ->where('followed_id', $user->id)
-                ->where('status', 'accepted')
-                ->exists();
-        }
-
-        $canViewPrivate = $isOwnProfile || $isFollowing;
-
-        if ($isPrivate && !$canViewPrivate) {
-            return Inertia::render('Profile/Public/Index', [
-                'user' => [
-                    'name' => $user->name,
-                    'username' => $user->username,
-                    'private' => true,
-                    'preview' => false,
-                ],
-                'places' => [],
-                'trips' => []
-            ]);
-        }
-
-        return Inertia::render('Profile/Public/Index', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-                'private' => false,
-                'preview' => $isOwnProfile,
-            ],
-            'places' => $this->populateMapData($user->id),
-            'trips' => $this->populateTripData($user->id)
-        ]);
+        return Inertia::render('Profile/Public/Index', $profileData);
     }
 
 

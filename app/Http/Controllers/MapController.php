@@ -2,47 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Inertia\Inertia;
-
-use App\Models\Trip;
-
+use App\Services\MapService;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class MapController extends Controller
 {
     public function index()
     {
-        $places = Trip::with('places', 'places.photos')
-            ->where('user_id', Auth::id())
-            ->get()
-            ->flatMap(function ($trip) {
-                return $trip->places->map(function ($place) use ($trip) {
-                    return [
-                        'trip' => $trip->title,
-                        'trip_id' => $trip->id, 
-                        'start_date' => Carbon::parse($trip->start_date)->format('d/m/Y'), 
-                        'end_date' => Carbon::parse($trip->end_date)->format('d/m/Y'),    
-                        'name' => $place->name,
-                        'lat' => $place->lat,
-                        'lng' => $place->lng,
-                        'images' => $place->photos()
-                            ->where(function ($query) {
-                                $query->where('path', 'LIKE', '%.png')
-                                    ->orWhere('path', 'LIKE', '%.jpg')
-                                    ->orWhere('path', 'LIKE', '%.jpeg');
-                            })
-                            ->take(2)
-                            ->pluck('path')
-                            ->map(fn($path) => "/storage/{$path}")
-                            ->toArray()
-                    ];
-                });
-            });
+        $mapService = new MapService();
+        $places = $mapService->getUserMapData(Auth::id());
 
         return Inertia::render('Map', [
             'places' => $places
         ]);
     }
-
 }
