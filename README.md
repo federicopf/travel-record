@@ -1,38 +1,128 @@
-# 🌍 Travel Record
+# 🗺️ Travel Record
 
-**Travel Record** is a travel tracking and sharing app built with Laravel and Vue.  
-It allows users to record trips, add visited places with hashtags, and visualize their experiences on an interactive map.
+Un'applicazione web moderna per registrare e condividere i tuoi viaggi con foto, luoghi e hashtags personalizzati.
+
+## ✨ Caratteristiche
+
+- **📸 Gestione Viaggi** - Crea e organizza i tuoi viaggi con foto e dettagli
+- **🗺️ Mappa Interattiva** - Visualizza tutti i luoghi visitati su una mappa globale
+- **👥 Social Network** - Segui altri viaggiatori e condividi i tuoi viaggi
+- **🏷️ Hashtags Personalizzati** - Organizza i contenuti con tag colorati
+- **📱 Design Responsive** - Funziona perfettamente su desktop e mobile
+- **🎨 Temi Personalizzabili** - Scegli il tuo colore preferito
+
+## 🚀 Tecnologie
+
+- **Backend**: Laravel 10 (PHP)
+- **Frontend**: Vue.js 3 + Inertia.js
+- **Styling**: Tailwind CSS
+- **Maps**: Google Maps API
+- **Database**: MySQL/PostgreSQL
+
+## 📦 Installazione
+
+1. **Clona il repository**
+   ```bash
+   git clone [repository-url]
+   cd travel-record
+   ```
+
+2. **Installa le dipendenze**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Configura l'ambiente**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Configura il database**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
+
+5. **Avvia l'applicazione**
+   ```bash
+   npm run dev
+   php artisan serve
+   ```
+
+## 🏗️ Struttura Frontend
+
+```
+resources/js/
+├── Components/          # Componenti riutilizzabili
+│   ├── UI/             # Componenti UI base
+│   ├── Trip/           # Componenti per viaggi
+│   ├── Friends/        # Componenti per amici
+│   └── Profile/        # Componenti per profilo
+├── Pages/              # Pagine dell'applicazione
+│   ├── Home.vue        # Dashboard principale
+│   ├── NewTrip.vue     # Creazione viaggio
+│   ├── Map.vue         # Mappa globale
+│   └── [altri]         # Altre pagine
+└── Layouts/            # Layout dell'applicazione
+```
+
+## 🎯 Funzionalità Principali
+
+### Viaggi
+- ✅ Creazione viaggi con date e destinazioni
+- ✅ Aggiunta luoghi tramite Google Maps
+- ✅ Upload e gestione foto
+- ✅ Hashtags personalizzati
+
+### Social
+- ✅ Sistema di follow/unfollow
+- ✅ Profili pubblici e privati
+- ✅ Ricerca utenti
+- ✅ Richieste di amicizia
+
+### Mappa
+- ✅ Visualizzazione globale dei luoghi
+- ✅ Marker personalizzati
+- ✅ Info window con dettagli
+- ✅ Navigazione ai viaggi
+
+## 🔧 Configurazione
+
+### Variabili d'Ambiente Necessarie
+
+```env
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+APP_URL=http://localhost:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=travel_record
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+## 📱 Screenshots
+
+*[Screenshots dell'applicazione]*
+
+## 🤝 Contribuire
+
+1. Fork il progetto
+2. Crea un branch per la feature (`git checkout -b feature/AmazingFeature`)
+3. Commit le modifiche (`git commit -m 'Add some AmazingFeature'`)
+4. Push al branch (`git push origin feature/AmazingFeature`)
+5. Apri una Pull Request
+
+## 📄 Licenza
+
+Questo progetto è sotto licenza MIT. Vedi il file `LICENSE` per maggiori dettagli.
+
+## 👨‍💻 Autore
+
+**Travel Record Team**
 
 ---
 
-## ✨ Features
-
-- 🧳 **Trip management**: Create and view trips with start and end dates
-- 📍 **Visited places**: Add locations with descriptions, coordinates, and images
-- 🔖 **Hashtags**: Tag places to organize and filter experiences
-- 🗺️ **Interactive map**: View all visited places using Google Maps with custom markers
-- 🧠 **Smart hashtag summary**: See a full overview of hashtags used throughout a trip
-- 🔒 **Privacy-aware profiles**: Users can set their profile and trips as public or private
-- 🧭 **Follow system**: Follow other users and manage follow requests
-- 🔎 **Full-text search**: Search places and hashtags with Meilisearch
-- 🧩 **Ziggy integration**: Access Laravel routes directly from Vue
-
----
-
-## ⚙️ Installation (with Laravel Sail)
-
-```bash
-git clone https://github.com/your-username/travelrecord.git
-cd travelrecord
-
-cp .env.example .env
-
-composer install
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan key:generate
-./vendor/bin/sail artisan migrate
-./vendor/bin/sail artisan storage:link
-./vendor/bin/sail artisan ziggy:generate resources/js/ziggy.js
-
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev
+⭐ Se ti piace questo progetto, lascia una stella!
