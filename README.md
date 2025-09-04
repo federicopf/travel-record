@@ -1,17 +1,17 @@
 # 🗺️ Travel Record
 
-Un'applicazione web moderna per registrare e condividere i tuoi viaggi con foto, luoghi e hashtags personalizzati.
+A modern web application for recording and sharing your travels with photos, places, and custom hashtags.
 
-## ✨ Caratteristiche
+## ✨ Features
 
-- **📸 Gestione Viaggi** - Crea e organizza i tuoi viaggi con foto e dettagli
-- **🗺️ Mappa Interattiva** - Visualizza tutti i luoghi visitati su una mappa globale
-- **👥 Social Network** - Segui altri viaggiatori e condividi i tuoi viaggi
-- **🏷️ Hashtags Personalizzati** - Organizza i contenuti con tag colorati
-- **📱 Design Responsive** - Funziona perfettamente su desktop e mobile
-- **🎨 Temi Personalizzabili** - Scegli il tuo colore preferito
+- **📸 Trip Management** - Create and organize your trips with photos and details
+- **🗺️ Interactive Map** - View all visited places on a global map
+- **👥 Social Network** - Follow other travelers and share your trips
+- **🏷️ Custom Hashtags** - Organize content with colored tags
+- **📱 Responsive Design** - Works perfectly on desktop and mobile
+- **🎨 Customizable Themes** - Choose your preferred color
 
-## 🚀 Tecnologie
+## 🚀 Tech Stack
 
 - **Backend**: Laravel 10 (PHP)
 - **Frontend**: Vue.js 3 + Inertia.js
@@ -19,78 +19,78 @@ Un'applicazione web moderna per registrare e condividere i tuoi viaggi con foto,
 - **Maps**: Google Maps API
 - **Database**: MySQL/PostgreSQL
 
-## 📦 Installazione
+## 📦 Installation
 
-1. **Clona il repository**
+1. **Clone the repository**
    ```bash
    git clone [repository-url]
    cd travel-record
    ```
 
-2. **Installa le dipendenze**
+2. **Install dependencies**
    ```bash
    composer install
    npm install
    ```
 
-3. **Configura l'ambiente**
+3. **Set up environment**
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
-4. **Configura il database**
+4. **Configure database**
    ```bash
    php artisan migrate
    php artisan db:seed
    ```
 
-5. **Avvia l'applicazione**
+5. **Start the application**
    ```bash
    npm run dev
    php artisan serve
    ```
 
-## 🏗️ Struttura Frontend
+## 🏗️ Frontend Structure
 
 ```
 resources/js/
-├── Components/          # Componenti riutilizzabili
-│   ├── UI/             # Componenti UI base
-│   ├── Trip/           # Componenti per viaggi
-│   ├── Friends/        # Componenti per amici
-│   └── Profile/        # Componenti per profilo
-├── Pages/              # Pagine dell'applicazione
-│   ├── Home.vue        # Dashboard principale
-│   ├── NewTrip.vue     # Creazione viaggio
-│   ├── Map.vue         # Mappa globale
-│   └── [altri]         # Altre pagine
-└── Layouts/            # Layout dell'applicazione
+├── Components/          # Reusable components
+│   ├── UI/             # Base UI components
+│   ├── Trip/           # Trip-related components
+│   ├── Friends/        # Friends-related components
+│   └── Profile/        # Profile components
+├── Pages/              # Application pages
+│   ├── Home.vue        # Main dashboard
+│   ├── NewTrip.vue     # Trip creation
+│   ├── Map.vue         # Global map
+│   └── [others]        # Other pages
+└── Layouts/            # Application layouts
 ```
 
-## 🎯 Funzionalità Principali
+## 🎯 Main Features
 
-### Viaggi
-- ✅ Creazione viaggi con date e destinazioni
-- ✅ Aggiunta luoghi tramite Google Maps
-- ✅ Upload e gestione foto
-- ✅ Hashtags personalizzati
+### Trips
+- ✅ Create trips with dates and destinations
+- ✅ Add places via Google Maps
+- ✅ Upload and manage photos
+- ✅ Custom hashtags
 
 ### Social
-- ✅ Sistema di follow/unfollow
-- ✅ Profili pubblici e privati
-- ✅ Ricerca utenti
-- ✅ Richieste di amicizia
+- ✅ Follow/unfollow system
+- ✅ Public and private profiles
+- ✅ User search
+- ✅ Friendship requests
 
-### Mappa
-- ✅ Visualizzazione globale dei luoghi
-- ✅ Marker personalizzati
-- ✅ Info window con dettagli
-- ✅ Navigazione ai viaggi
+### Map
+- ✅ Global place visualization
+- ✅ Custom markers
+- ✅ Info windows with details
+- ✅ Trip navigation
 
-## 🔧 Configurazione
+## 🔧 Configuration
 
-### Variabili d'Ambiente Necessarie
+### Required Environment Variables
 
 ```env
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
@@ -105,24 +105,24 @@ DB_PASSWORD=
 
 ## 📱 Screenshots
 
-*[Screenshots dell'applicazione]*
+*[Application screenshots]*
 
-## 🤝 Contribuire
+## 🤝 Contributing
 
-1. Fork il progetto
-2. Crea un branch per la feature (`git checkout -b feature/AmazingFeature`)
-3. Commit le modifiche (`git commit -m 'Add some AmazingFeature'`)
-4. Push al branch (`git push origin feature/AmazingFeature`)
-5. Apri una Pull Request
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 Licenza
+## 📄 License
 
-Questo progetto è sotto licenza MIT. Vedi il file `LICENSE` per maggiori dettagli.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
-## 👨‍💻 Autore
+## 👨‍💻 Author
 
 **Travel Record Team**
 
 ---
 
-⭐ Se ti piace questo progetto, lascia una stella!
+⭐ If you like this project, give it a star!
